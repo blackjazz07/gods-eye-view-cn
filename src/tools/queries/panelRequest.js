@@ -31,7 +31,7 @@ const METHODS = new Set(['GET', 'HEAD', 'POST']);
 // page may use; credential and model endpoints; the MCP server itself; and
 // the development server's internal routes.
 const REFUSED_PATHS = [
-  /^\/api\/(?:setup|realtime|openai)(?:[/.]|$)/i,
+  /^\/api\/(?:setup|realtime|bailian)(?:[/.]|$)/i,
   /^\/mcp(?:[/.]|$)/i,
   /^\/(?:@|__)/,
 ];

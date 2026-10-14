@@ -276,6 +276,12 @@ export class RealtimeFacade {
   set processedCalls(value) {
     this._turns.processedCalls = value;
   }
+  get answeredCallIds() {
+    return this._turns.answeredCallIds;
+  }
+  set answeredCallIds(value) {
+    this._turns.answeredCallIds = value;
+  }
   get responseActive() {
     return this._turns.responseActive;
   }

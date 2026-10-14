@@ -1,7 +1,7 @@
 import { realtimeSessionEvent } from './realtimeEvents.js';
 import { readLayerLifecycleSummary } from './layerSummary.js';
 import {
-  CALL_DEDUPE_MS,
+  PROCESSED_CALL_MEMORY,
   SUPERSEDED_RESPONSE_MEMORY,
   shouldStopVoiceAfterRadioTool,
   responseInstructionForToolResult,
@@ -29,6 +29,15 @@ const SPEECH_RESPONSE_MEMORY = 8;
 
 /** A progress line is one short sentence; this bounds its cost. */
 export const PROGRESS_MAX_OUTPUT_TOKENS = 60;
+
+/**
+ * Fallback delivery for a tool-result follow-up whose every host-driven release
+ * point already fired while a deferred tool was still running. Three tries at
+ * 1.5 s covers a progress line finishing late without ever re-sending a reply
+ * the deterministic paths already delivered.
+ */
+const PENDING_RESPONSE_RETRY_MS = 1500;
+const PENDING_RESPONSE_RETRIES = 3;
 
 /** Own response sequencing, tool execution, deduplication and superseded intent. */
 export class RealtimeTurns {
@@ -58,10 +67,13 @@ export class RealtimeTurns {
       operations,
     );
     this.processedCalls = new Map();
+    this.answeredCallIds = new Set();
     this.responseActive = false;
     this.responseCreatePending = false;
     this.userTurnPending = false;
     this.pendingResponseInstructions = null;
+    this.pendingResponseTimer = null;
+    this.pendingResponseRetries = 0;
     this.pendingUserTextResponse = false;
     this.activeResponseId = null;
     this.supersededResponseIds = new Set();
@@ -296,6 +308,23 @@ export class RealtimeTurns {
         });
         return;
       }
+      // The server rejects a SECOND function_call_output for one call_id. Every
+      // call is answered once by construction (see sendToolOutput), so this can
+      // only be a late rejection of something already handled: the first output
+      // was accepted and the call ran. Tearing the session down over it would
+      // abort live tools and raise a VOICE SYSTEM ERROR tray for a turn that
+      // worked, so acknowledge it in the log and move on — the same posture as
+      // the viewport race above.
+      if (
+        payload.error?.param === 'call_id' &&
+        /duplicate function call output/i.test(payload.error?.message || '')
+      ) {
+        this.debugLog('client.function_call_output.rejected_duplicate', {
+          eventId: payload.event_id || null,
+          message: payload.error?.message || null,
+        });
+        return;
+      }
       this.responseActive = false;
       this.responseCreatePending = false;
       this.pendingResponseInstructions = null;
@@ -394,11 +423,8 @@ export class RealtimeTurns {
     // a terminal output saying plainly that the turn moved on. No
     // `response.create` follows — the deferred typed turn is the single answer.
     if (this.isSupersededResponse(toolResponseId)) {
-      this.pruneProcessedCalls();
       for (const call of calls) {
-        const keys = callDedupeKeys(call);
-        if (keys.some((key) => this.processedCalls.has(key))) continue;
-        keys.forEach((key) => this.processedCalls.set(key, performance.now()));
+        if (!this.claimCall(call)) continue;
         this.sendToolOutput(call.call_id || call.id, {
           ok: false,
           action: call.name,
@@ -415,7 +441,6 @@ export class RealtimeTurns {
     }
 
     this.setStatus('executing', 'Running command');
-    this.pruneProcessedCalls();
     let sentOutput = false;
     let lastResult = null;
     let stopAfterRadioTool = false;
@@ -424,9 +449,12 @@ export class RealtimeTurns {
       // most one entry (see the pre-loop gate above), so there is no mid-batch
       // window to guard. Restore one here if extractFunctionCalls ever returns
       // multiple calls.
-      const keys = callDedupeKeys(call);
-      if (keys.some((key) => this.processedCalls.has(key))) continue;
-      keys.forEach((key) => this.processedCalls.set(key, performance.now()));
+      //
+      // Every server surface for this call — whatever the gap between them —
+      // collapses here. Running one twice both duplicates the map mutation and
+      // sends two `function_call_output`s for a single call_id, which the
+      // Realtime API rejects (see PROCESSED_CALL_MEMORY).
+      if (!this.claimCall(call)) continue;
 
       let result;
       const resultChannel = this.dc;
@@ -704,7 +732,8 @@ export class RealtimeTurns {
       return;
     }
     if (
-      type === 'response.output_audio_transcript.delta' &&
+      (type === 'response.output_audio_transcript.delta' ||
+        type === 'response.audio_transcript.delta') &&
       responseId &&
       !isProgress
     ) {
@@ -921,6 +950,7 @@ export class RealtimeTurns {
     this.narration?.cancel();
     this.metrics?.bargeIn();
     this.pendingResponseInstructions = null;
+    this.clearPendingResponseRetry();
     if (this.responseActive) {
       this.supersedeActiveResponseForUserTurn();
       this.cancelResponse(responseId);
@@ -937,6 +967,19 @@ export class RealtimeTurns {
 
   sendToolOutput(callId, result) {
     if (!callId || !this.dc || this.dc.readyState !== 'open') return false;
+    // One output per call_id is the protocol's own invariant: the server answers
+    // a second one with "Duplicate function call output for call_id" and that
+    // rejection surfaced as a VOICE SYSTEM ERROR tray on a turn that had in fact
+    // worked. `claimCall` keeps the dispatch side honest; this guards the WIRE
+    // itself, so no future call path can break the rule by forgetting to ask.
+    const answeredKey = `answered:${callId}`;
+    if (this.answeredCallIds.has(answeredKey)) {
+      this.debugLog('client.function_call_output.duplicate', { callId });
+      return false;
+    }
+    this.answeredCallIds.add(answeredKey);
+    while (this.answeredCallIds.size > PROCESSED_CALL_MEMORY)
+      this.answeredCallIds.delete(this.answeredCallIds.values().next().value);
     this.sendRealtimeEvent(
       {
         type: 'conversation.item.create',
@@ -951,10 +994,32 @@ export class RealtimeTurns {
     return true;
   }
 
+  /**
+   * Claim a function call for this session. False means the call was already
+   * handled: the server delivers the same call on every surface that describes
+   * it, and those deliveries are spread over the whole response — so the claim
+   * is keyed on call/item identity and held for as long as the session lives,
+   * never on a wall-clock window (see PROCESSED_CALL_MEMORY).
+   * @param {object} call Extracted function call.
+   * @returns {boolean} True when the caller owns this call.
+   */
+  claimCall(call) {
+    const keys = callDedupeKeys(call);
+    if (!keys.length) return true; // Unidentifiable call: nothing to collapse on.
+    if (keys.some((key) => this.processedCalls.has(key))) return false;
+    for (const key of keys) this.processedCalls.set(key, performance.now());
+    this.pruneProcessedCalls();
+    return true;
+  }
+
+  /**
+   * Keep the answered-call registry bounded. Entries are dropped only when the
+   * session has run past `PROCESSED_CALL_MEMORY` calls — far further than any
+   * single call's own event trail can reach — never on a timer.
+   */
   pruneProcessedCalls() {
-    const cutoff = performance.now() - CALL_DEDUPE_MS;
-    for (const [key, timestamp] of this.processedCalls) {
-      if (timestamp < cutoff) this.processedCalls.delete(key);
+    while (this.processedCalls.size > PROCESSED_CALL_MEMORY) {
+      this.processedCalls.delete(this.processedCalls.keys().next().value);
     }
   }
 
@@ -1028,16 +1093,39 @@ export class RealtimeTurns {
   }
 
   flushPendingResponse() {
+    if (!this.pendingResponseInstructions) {
+      this.clearPendingResponseRetry();
+      return;
+    }
     if (
-      !this.pendingResponseInstructions ||
       this.responseActive ||
       this.responseCreatePending ||
       this.progressGenerating() ||
       this.userTurnPending ||
       !this.dc ||
       this.dc.readyState !== 'open'
-    )
+    ) {
+      // Every other release point for a tool-result follow-up is host-driven:
+      // the in-band response.done, the progress line ending, a rejected
+      // progress create. A tool that resolves AFTER all of those have already
+      // fired (a deferred tool — fly_to_location{waitForArrival} lands seconds
+      // after the progress line that narrated the wait finished) has nothing
+      // left to release it, so the pending reply sat here forever and the model
+      // was never asked to finish a multi-step command: "围绕台北101大厦旋转"
+      // flew to the landmark and never orbited (field finding). Retry later so
+      // a gate that clears on its own still delivers it, and record which gate
+      // held so the next report names it instead of guessing.
+      this.schedulePendingResponseRetry();
+      this.debugLog('client.response_create.deferred', {
+        responseActive: this.responseActive,
+        responseCreatePending: this.responseCreatePending,
+        progressGenerating: this.progressGenerating(),
+        userTurnPending: this.userTurnPending,
+        channelOpen: this.dc?.readyState === 'open',
+      });
       return;
+    }
+    this.clearPendingResponseRetry();
     const instructions = this.pendingResponseInstructions;
     this.pendingResponseInstructions = null;
     this.responseCreatePending = true;
@@ -1051,6 +1139,32 @@ export class RealtimeTurns {
     if (!sent) this.responseCreatePending = false;
   }
 
+  /**
+   * Bounded retry for a follow-up whose release points all fired before the
+   * tool resolved (see flushPendingResponse). Only ever delivers an already
+   * queued reply, and stops as soon as the deterministic paths strand nothing.
+   */
+  schedulePendingResponseRetry() {
+    if (
+      this.pendingResponseTimer ||
+      this.pendingResponseRetries >= PENDING_RESPONSE_RETRIES
+    )
+      return;
+    this.pendingResponseRetries += 1;
+    const timer = setTimeout(() => {
+      this.pendingResponseTimer = null;
+      if (this.pendingResponseInstructions) this.flushPendingResponse();
+    }, PENDING_RESPONSE_RETRY_MS);
+    timer.unref?.();
+    this.pendingResponseTimer = timer;
+  }
+
+  clearPendingResponseRetry() {
+    if (this.pendingResponseTimer) clearTimeout(this.pendingResponseTimer);
+    this.pendingResponseTimer = null;
+    this.pendingResponseRetries = 0;
+  }
+
   abortTools() {
     for (const controller of this.activeToolAbortControllers)
       controller.abort();
@@ -1060,10 +1174,12 @@ export class RealtimeTurns {
 
   reset() {
     this.processedCalls.clear();
+    this.answeredCallIds.clear();
     this.responseActive = false;
     this.responseCreatePending = false;
     this.userTurnPending = false;
     this.pendingResponseInstructions = null;
+    this.clearPendingResponseRetry();
     this.pendingUserTextResponse = false;
     this.activeResponseId = null;
     this.supersededResponseIds.clear();

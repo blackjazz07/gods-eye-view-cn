@@ -54,7 +54,7 @@ export function createBrowserViteConfig({
   googleApiKey,
   cesiumToken,
   mapillaryToken,
-  host = 'localhost',
+  host = '0.0.0.0',
   port = 4173,
   allowedHosts = DEFAULT_ALLOWED_HOSTS,
   command,

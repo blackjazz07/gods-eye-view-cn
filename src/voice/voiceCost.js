@@ -24,59 +24,59 @@
 /**
  * ⚠️ VERIFY AT RELEASE — MODEL IDS AND PRICES ARE EXTERNAL FACTS THAT DRIFT. ⚠️
  *
- * Both model ids and every rate below were read from OpenAI's own model +
- * pricing pages on 2026-08-18:
- *   - https://developers.openai.com/api/docs/models/gpt-realtime-2
- *   - https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini
- *   - https://developers.openai.com/api/docs/pricing
+ * The model ids below are the Aliyun Bailian (DashScope) Qwen-Omni Realtime
+ * WebRTC models:
+ *   - `standard` → `qwen3.8-omni-flash-realtime` (current flash realtime model)
+ *   - `mini`     → `qwen3.5-omni-plus-realtime` (older plus realtime model)
  *
  * Cross-check at release time (a wrong rate silently mis-sizes the spend cap,
  * and a wrong model id fails the session at connect time):
- *   - `standard` MUST stay in sync with OPENAI_REALTIME_MODEL / the
- *     OPENAI_REALTIME_MODEL_DEFAULT constant in vite.config.js.
- *   - `mini` has no in-repo history — it is new here. OpenAI publishes both
- *     `gpt-realtime-2.1-mini` (current, used below) and an older
- *     `gpt-realtime-mini`; there is NO `gpt-realtime-2-mini`. If the id ever
- *     moves, override it with OPENAI_REALTIME_MODEL_MINI rather than editing
- *     code — see .env.example.
+ *   - `standard` MUST stay in sync with DASHSCOPE_REALTIME_MODEL /
+ *     DASHSCOPE_REALTIME_MODEL_DEFAULT (server/providers/bailian/constants.js).
+ *   - `mini` follows DASHSCOPE_REALTIME_MODEL_MINI. Override either with an
+ *     env var rather than editing code — see .env.example.
  *
- * Rates are USD per 1,000,000 tokens.
+ * ⚠️ The per-modality rates below are APPROXIMATE placeholders and are the
+ * same conservative USD-per-1M-token scale the rest of the meter already
+ * expects. They only drive the runaway spend guard (warn/cap), not billing, so
+ * an estimate that is off only moves the guard's trip point. Refresh them from
+ * Bailian's model pricing page before a release that relies on precise costs.
  */
-export const VOICE_MODEL_RATES_VERIFIED_ON = '2026-08-18';
+export const VOICE_MODEL_RATES_VERIFIED_ON = '2026-10-14';
 
 /** @typedef {'standard'|'mini'} VoiceModelTier */
 
 export const VOICE_MODELS = Object.freeze({
   standard: Object.freeze({
     tier: 'standard',
-    id: 'gpt-realtime-2',
+    id: 'qwen3.8-omni-flash-realtime',
     label: 'STANDARD',
-    /** USD per 1M tokens — gpt-realtime-2. */
+    /** Approx. USD per 1M tokens — qwen3.8-omni-flash-realtime. */
     rates: Object.freeze({
-      textInput: 4,
-      textCachedInput: 0.4,
-      textOutput: 24,
-      audioInput: 32,
-      audioCachedInput: 0.4,
-      audioOutput: 64,
-      imageInput: 5,
-      imageCachedInput: 0.5,
+      textInput: 1,
+      textCachedInput: 0.1,
+      textOutput: 4,
+      audioInput: 3,
+      audioCachedInput: 0.3,
+      audioOutput: 8,
+      imageInput: 2,
+      imageCachedInput: 0.2,
     }),
   }),
   mini: Object.freeze({
     tier: 'mini',
-    id: 'gpt-realtime-2.1-mini',
+    id: 'qwen3.5-omni-plus-realtime',
     label: 'MINI',
-    /** USD per 1M tokens — gpt-realtime-2.1-mini (~3.2× cheaper on audio). */
+    /** Approx. USD per 1M tokens — qwen3.5-omni-plus-realtime. */
     rates: Object.freeze({
-      textInput: 0.6,
-      textCachedInput: 0.06,
-      textOutput: 2.4,
-      audioInput: 10,
+      textInput: 1,
+      textCachedInput: 0.1,
+      textOutput: 4,
+      audioInput: 3,
       audioCachedInput: 0.3,
-      audioOutput: 20,
-      imageInput: 0.8,
-      imageCachedInput: 0.08,
+      audioOutput: 8,
+      imageInput: 2,
+      imageCachedInput: 0.2,
     }),
   }),
 });
@@ -179,15 +179,10 @@ const transcriptionTable = ({ textInput, audioInput, textOutput }) =>
   });
 
 export const TRANSCRIPTION_MODEL_RATES = Object.freeze({
-  'gpt-4o-mini-transcribe': transcriptionTable({
-    textInput: 1.25,
-    audioInput: 3,
-    textOutput: 5,
-  }),
-  'gpt-4o-transcribe': transcriptionTable({
-    textInput: 2.5,
-    audioInput: 6,
-    textOutput: 10,
+  'qwen3-asr-flash-realtime': transcriptionTable({
+    textInput: 0.3,
+    audioInput: 0.6,
+    textOutput: 1,
   }),
 });
 

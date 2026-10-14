@@ -66,7 +66,7 @@ export class RealtimeCost {
       if (liveAuth === 'oauth') {
         const { responses, input, output, captions } = this.oauthUsage;
         this.ui.costValue.hidden = false;
-        this.ui.costValue.textContent = 'COST UNKNOWN';
+        this.ui.costValue.textContent = '成本未知';
         this.ui.costValue.dataset.level = 'unknown';
         this.ui.costValue.title =
           `ChatGPT OAuth session: ${responses} response(s), ${input} input and ${output} output tokens, ${captions} caption transcription(s) reported. ` +

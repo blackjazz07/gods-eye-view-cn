@@ -57,15 +57,15 @@ export function localSdrCardView(state) {
   return {
     connectionLabel: state.connected
       ? adsbActive
-        ? `${state.aircraftHeard || 0} HEARD`
-        : 'STREAMING'
+        ? `${state.aircraftHeard || 0} 已接收`
+        : '流式传输'
       : String(state.status || 'idle').toUpperCase(),
     connectionActive: Boolean(state.connected),
     connectLabel: transitional
       ? String(state.status).toUpperCase()
       : state.connected
-        ? 'DISCONNECT'
-        : 'CONNECT',
+        ? '断开连接'
+        : '连接',
     connectDisabled: transitional || !state.webUsbSupported,
     connectPressed: Boolean(state.connected),
     fmActive,
@@ -73,10 +73,10 @@ export function localSdrCardView(state) {
     modeDisabled: transitional,
     locateLabel:
       state.locationStatus === 'requesting'
-        ? 'LOCATING…'
+        ? '定位中…'
         : state.locationStatus === 'ready'
-          ? 'LOCATED'
-          : 'LOCATE',
+          ? '已定位'
+          : '定位',
     locateDisabled: state.locationStatus === 'requesting',
     locateActive: state.locationStatus === 'ready',
     changeDeviceDisabled: transitional || !state.webUsbSupported,

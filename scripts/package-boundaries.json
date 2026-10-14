@@ -286,34 +286,34 @@
     ],
     "external": []
   },
-  "openai-provider": {
+  "bailian-provider": {
     "runtime": "node",
-    "exports": ["./server/providers/openai"],
+    "exports": ["./server/providers/bailian"],
     "modules": [
       "src/hudLayoutPolicy.js",
       "server/providers/common/rate-limit.js",
       "server/providers/common/request.js",
       "server/providers/common/source-root.js",
-      "server/providers/openai.js",
-      "server/providers/openai/codex-auth.js",
-      "server/providers/openai/constants.js",
-      "server/providers/openai/debug-log.js",
-      "server/providers/openai/hud-summary.js",
-      "server/providers/openai/instructions.js",
-      "server/providers/openai/rate-limit.js",
-      "server/providers/openai/realtime.js",
-      "server/providers/openai/tools.js",
+      "server/providers/bailian.js",
+      "server/providers/bailian/constants.js",
+      "server/providers/bailian/debug-log.js",
+      "server/providers/bailian/hud-summary.js",
+      "server/providers/bailian/instructions.js",
+      "server/providers/bailian/rate-limit.js",
+      "server/providers/bailian/realtime.js",
+      "server/providers/bailian/tools.js",
       "src/hudSummaryResponse.js",
       "src/data/layerSnapshot.js",
       "src/data/feedState.js",
       "src/loadingFeedback.js",
       "src/data/installationFeedback.js",
       "src/voice/voiceCost.js",
+      "src/voice/dataChannelBudget.js",
       "server/providers/common/same-site.js",
       "src/localRequestGate.mjs",
       "src/voice/actionSchemas.js",
       "src/voice/layerManifest.js",
-      "server/providers/openai/toolDescriptions.js",
+      "server/providers/bailian/toolDescriptions.js",
       "src/sources/rateLimit.js"
     ],
     "external": []
@@ -1400,7 +1400,8 @@
       "src/voice/narration.js",
       "src/voice/earcon.js",
       "src/voice/pointerContext.js",
-      "src/voice/pointerReticle.js"
+      "src/voice/pointerReticle.js",
+      "src/voice/dataChannelBudget.js"
     ],
     "external": []
   },
@@ -2208,6 +2209,7 @@
       "src/sources/infrastructureData.js",
       "src/tools/functions.js",
       "src/voice/actionSchemas.js",
+      "src/voice/dataChannelBudget.js",
       "src/view/index.js",
       "src/app/embed.js"
     ],

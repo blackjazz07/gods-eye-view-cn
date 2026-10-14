@@ -1,4 +1,9 @@
-export const CLOUD_VOICE_AUTH_MODES = Object.freeze(['api-key', 'oauth']);
+// Bailian (DashScope) voice is API-key only — there is no OAuth path, unlike
+// the former OpenAI/ChatGPT integration. The "cloud auth mode" surface is kept
+// as a thin, always-'api-key' shim so the cost meter and key setup callers that
+// still read it keep working without carrying dead OAuth logic.
+
+export const CLOUD_VOICE_AUTH_MODES = Object.freeze(['api-key']);
 export const DEFAULT_CLOUD_VOICE_AUTH_MODE = 'api-key';
 export const CLOUD_VOICE_AUTH_STORAGE_KEY = 'godsEyeView.voice.cloudAuth';
 
@@ -11,31 +16,24 @@ function storageRef(storage) {
   }
 }
 
-export function normalizeCloudVoiceAuthMode(mode) {
-  const normalized = String(mode || '')
-    .trim()
-    .toLowerCase();
-  return CLOUD_VOICE_AUTH_MODES.includes(normalized)
-    ? normalized
-    : DEFAULT_CLOUD_VOICE_AUTH_MODE;
+/** Bailian is API-key only; any stored value normalizes back to 'api-key'. */
+export function normalizeCloudVoiceAuthMode() {
+  return DEFAULT_CLOUD_VOICE_AUTH_MODE;
 }
 
-export function readStoredCloudVoiceAuthMode(storage) {
+export function readStoredCloudVoiceAuthMode() {
+  return DEFAULT_CLOUD_VOICE_AUTH_MODE;
+}
+
+/** Best-effort no-op: there is nothing to toggle. */
+export function writeStoredCloudVoiceAuthMode(mode) {
   try {
-    return normalizeCloudVoiceAuthMode(
-      storageRef(storage)?.getItem(CLOUD_VOICE_AUTH_STORAGE_KEY),
+    storageRef()?.setItem(
+      CLOUD_VOICE_AUTH_STORAGE_KEY,
+      DEFAULT_CLOUD_VOICE_AUTH_MODE,
     );
-  } catch {
-    return DEFAULT_CLOUD_VOICE_AUTH_MODE;
-  }
-}
-
-export function writeStoredCloudVoiceAuthMode(mode, storage) {
-  const resolved = normalizeCloudVoiceAuthMode(mode);
-  try {
-    storageRef(storage)?.setItem(CLOUD_VOICE_AUTH_STORAGE_KEY, resolved);
   } catch {
     /* best effort */
   }
-  return resolved;
+  return DEFAULT_CLOUD_VOICE_AUTH_MODE;
 }

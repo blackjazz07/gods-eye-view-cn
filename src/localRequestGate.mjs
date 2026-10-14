@@ -3,9 +3,10 @@
  *
  * The credential panel has its own stricter gate (`admitKeySetupRequest` in
  * keySetupCore.mjs): loopback socket + local Host + exact Origin + JSON
- * Content-Type. The four endpoints here — `/api/realtime/token` (mints an
- * OpenAI Realtime token = spends money), `/api/openai/hud-summary` (OpenAI
- * spend), `/api/google/nearby-places` (Google spend), and
+ * Content-Type. The four endpoints here — `/api/realtime/session` +
+ * `/api/realtime/sdp` (Bailian Realtime session config and WebRTC SDP exchange,
+ * both spend money), `/api/bailian/hud-summary` (Bailian spend),
+ * `/api/google/nearby-places` (Google spend), and
  * `/api/realtime/debug-log` (appends to a local JSONL) — were previously
  * ungated, so a hostile web page open in the same browser could reach them
  * cross-site: a `fetch` carries a foreign `Origin`, and an `<img>`/navigation

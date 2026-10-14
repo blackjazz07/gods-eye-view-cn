@@ -28,7 +28,7 @@
     "ais",
     "satellites",
     "voice-control",
-    "openai-realtime",
+    "bailian-realtime",
     "visualization"
   ],
   "scripts": {
@@ -125,8 +125,8 @@
     "./server/providers/regional": {
       "node": "./server/providers/regional.js"
     },
-    "./server/providers/openai": {
-      "node": "./server/providers/openai.js"
+    "./server/providers/bailian": {
+      "node": "./server/providers/bailian.js"
     },
     "./server/standalone/key-setup": {
       "node": "./server/standalone/key-setup.js"

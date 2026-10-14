@@ -34,12 +34,12 @@ export function renderRadioState(state) {
     this._radioLayerState.textContent = transitioning
       ? lifecycleState.toUpperCase()
       : uncertain
-        ? 'UNCERTAIN'
+        ? '不确定'
         : state.loading
-          ? 'SYNC'
+          ? '同步'
           : enabled
             ? `${state.filteredCount}/${state.stationCount}`
-            : 'OFF';
+            : '关';
   }
   if (this._radioEnableBtn) {
     this._radioEnableBtn.classList.toggle('active', enabled);
@@ -47,15 +47,15 @@ export function renderRadioState(state) {
     this._radioEnableBtn.textContent = transitioning
       ? lifecycleState.toUpperCase()
       : uncertain
-        ? 'RECONCILE'
+        ? '重新协调'
         : enabled
-          ? 'DISABLE'
-          : 'ENABLE';
+          ? '禁用'
+          : '启用';
     this._radioEnableBtn.setAttribute(
       'aria-label',
       uncertain
-        ? 'Reconcile Radio — lifecycle uncertain'
-        : `${enabled ? 'Disable' : 'Enable'} Radio`,
+        ? '重新协调电台 — 生命周期不确定'
+        : `${enabled ? '禁用' : '启用'}电台`,
     );
     this._radioEnableBtn.disabled = false;
     this._radioEnableBtn.setAttribute('aria-disabled', String(transitioning));
@@ -70,15 +70,15 @@ export function renderRadioState(state) {
     this._contextRadioMiniEnableBtn.textContent = transitioning
       ? lifecycleState.toUpperCase()
       : uncertain
-        ? 'RECONCILE'
+        ? '重新协调'
         : enabled
-          ? 'DISABLE'
-          : 'ENABLE';
+          ? '禁用'
+          : '启用';
     this._contextRadioMiniEnableBtn.setAttribute(
       'aria-label',
       uncertain
-        ? 'Reconcile Radio — lifecycle uncertain'
-        : `${enabled ? 'Disable' : 'Enable'} Radio`,
+        ? '重新协调电台 — 生命周期不确定'
+        : `${enabled ? '禁用' : '启用'}电台`,
     );
     this._contextRadioMiniEnableBtn.disabled = false;
     this._contextRadioMiniEnableBtn.setAttribute(
@@ -96,15 +96,15 @@ export function renderRadioState(state) {
     this._cockpitRadioEnableBtn.textContent = transitioning
       ? lifecycleState.toUpperCase()
       : uncertain
-        ? 'RECONCILE'
+        ? '重新协调'
         : enabled
-          ? 'DISABLE'
-          : 'ENABLE';
+          ? '禁用'
+          : '启用';
     this._cockpitRadioEnableBtn.setAttribute(
       'aria-label',
       uncertain
-        ? 'Reconcile Radio — lifecycle uncertain'
-        : `${enabled ? 'Disable' : 'Enable'} Radio`,
+        ? '重新协调电台 — 生命周期不确定'
+        : `${enabled ? '禁用' : '启用'}电台`,
     );
     this._cockpitRadioEnableBtn.disabled = false;
     this._cockpitRadioEnableBtn.setAttribute(
@@ -295,13 +295,13 @@ export function renderRadioState(state) {
   }
   if (this._contextRadioMiniStation) {
     this._contextRadioMiniStation.textContent = uncertain
-      ? 'RADIO STATE UNCERTAIN'
-      : selected?.name || (state.loading ? 'SYNCING DIRECTORY' : 'RADIO READY');
+      ? '电台状态不确定'
+      : selected?.name || (state.loading ? '同步目录中' : '电台就绪');
   }
   if (this._cockpitRadioStation) {
     this._cockpitRadioStation.textContent = uncertain
-      ? 'UNCERTAIN'
-      : selected?.name || (state.loading ? 'SYNCING' : 'READY');
+      ? '不确定'
+      : selected?.name || (state.loading ? '同步中' : '就绪');
   }
   if (this._radioPlaybackState) {
     const catalogSuffix = state.degraded

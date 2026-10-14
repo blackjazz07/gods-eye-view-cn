@@ -1,10 +1,23 @@
 # Changelog
 
-- GBFS v3 station names use English translations when available, then the first
-  usable translation or short name. Empty or malformed names no longer appear as
-  `[object Object]` or interrupt station loading; legacy string names remain
-  supported in the globe and bike-share tools. Thanks to
-  [Kristóf Kékesi](https://github.com/KristofKekesi) (#61).
+- The WebRTC data-channel byte budget is resolved in one place and is never
+  assumed to be zero. `src/voice/dataChannelBudget.js` reads
+  `a=max-message-size` from the answer SDP, prefers the transport's negotiated
+  `maxMessageSize`, and falls back to the RFC 8841 default of 65536 B, for both
+  the browser that splits `session.update` and the server that proxies and logs
+  the answer. An unknown negotiation used to resolve to 0, which silenced the
+  pre-flight size check and let an oversized event go out, throw, and leave the
+  session with no tools at all. Each split step now records the budget and where
+  it came from, and the SDP log line names both sides of the negotiation rather
+  than printing a bare attribute value.
+
+- A function call the server announces on more than one surface (function-call
+  arguments, output item, and the completed response) executes once and is
+  answered once, however long the assistant keeps speaking in between. The
+  answered-call registry is bounded by count instead of a 2.5 s window that
+  expired mid-response and let one call through twice; a second
+  `function_call_output` for one `call_id` is refused at the wire, and a server
+  rejection of a duplicate is logged rather than raised as a session error.
 
 - Treat explicitly current, complete empty vessel coverage as a successful update,
   clearing obsolete contacts while retaining stale or incomplete snapshots.

@@ -56,11 +56,11 @@ export {
 import { createRealtimeBackend } from './realtimeBackend.js';
 
 const STATUS = {
-  idle: 'OFF',
-  connecting: 'CONNECTING',
-  listening: 'LISTENING',
-  executing: 'EXECUTING',
-  error: 'ERROR',
+  idle: '关',
+  connecting: '连接中',
+  listening: '聆听中',
+  executing: '执行中',
+  error: '错误',
 };
 
 /** Compose voice state owners and coordinate ordered session startup/teardown. */

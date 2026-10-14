@@ -9,7 +9,7 @@ import {
   toFunctionTools,
   toolsForSurface,
 } from '../../src/tools/index.js';
-import { realtimeSessionTools } from '../providers/openai/tools.js';
+import { realtimeSessionTools } from '../providers/bailian/tools.js';
 
 export function standaloneVoiceTools() {
   return realtimeSessionTools(

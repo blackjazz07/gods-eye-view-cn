@@ -52,8 +52,8 @@ export function createVoiceCommands({
   if (ui.tierButton) ui.tierButton.hidden = !capabilities.costControls;
   if (ui.costValue) ui.costValue.hidden = !capabilities.costControls;
   if (!capabilities.pushToTalk) {
-    ui.button.setAttribute('aria-label', 'Toggle voice control');
-    if (ui.helpDetail) ui.helpDetail.textContent = 'Activate to toggle voice';
+    ui.button.setAttribute('aria-label', '切换语音控制');
+    if (ui.helpDetail) ui.helpDetail.textContent = '点击切换语音';
   }
   // Retain the existing controller's inspection surface for browser tools.
   const controls = adapter.controller || session;

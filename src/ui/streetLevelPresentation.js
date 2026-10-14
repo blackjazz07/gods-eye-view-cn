@@ -85,10 +85,10 @@ function presentStatus(state) {
       title: keyGuidance(state) || title,
     };
   if (state.coverage.loading)
-    return { text: 'LOADING', tone: 'busy', pressed, title };
+    return { text: '加载中', tone: 'busy', pressed, title };
   return pressed
-    ? { text: 'ON', tone: 'on', pressed, title }
-    : { text: 'OFF', tone: '', pressed, title };
+    ? { text: '开', tone: 'on', pressed, title }
+    : { text: '关', tone: '', pressed, title };
 }
 
 /** A chip is lit only while the layer and its provider are both on. */

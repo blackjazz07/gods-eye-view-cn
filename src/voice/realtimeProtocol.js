@@ -1,4 +1,18 @@
-export const CALL_DEDUPE_MS = 2500;
+/**
+ * How many handled function calls a session remembers. The registry is bounded
+ * by COUNT, never by a wall-clock window: the server announces the same call
+ * up to three times — `response.function_call_arguments.done`,
+ * `response.output_item.done` and the `response.output` array inside
+ * `response.done` — and those deliveries are separated by however long the
+ * assistant keeps speaking after the arguments finish. Measured in the field:
+ * 2.6 s on a short spoken preamble, unbounded on a long one. A time-to-live
+ * shorter than that gap let the call through twice, so `fly_to_location` ran
+ * twice and sent two `function_call_output`s for one `call_id`, which the
+ * Realtime API rejects outright ("Duplicate function call output for call_id:
+ * …"). A call_id is unique for the session, so the entries only have to outlive
+ * the session's own tool-call count, not a timer.
+ */
+export const PROCESSED_CALL_MEMORY = 256;
 
 /**
  * How many recently superseded responses to remember. Only a response that was
@@ -172,6 +186,27 @@ export function extractFunctionCalls(event) {
     event.item?.type === 'function_call'
   ) {
     calls.push(event.item);
+  }
+
+  // Aliyun Bailian (Qwen-Omni) delivers function calls with their COMPLETE
+  // arguments inside response.done's `response.output`, not via a dedicated
+  // `response.function_call_arguments.done` event. The earlier
+  // `conversation.item.created` for the same call carries an empty `arguments`
+  // string, so we deliberately dispatch only from here.
+  if (event.type === 'response.done') {
+    const output = Array.isArray(event.response?.output)
+      ? event.response.output
+      : [];
+    for (const item of output) {
+      if (item?.type === 'function_call' && item.name) {
+        calls.push({
+          id: item.id || item.call_id,
+          call_id: item.call_id,
+          name: item.name,
+          arguments: item.arguments,
+        });
+      }
+    }
   }
 
   return calls.filter((call) => call?.name);

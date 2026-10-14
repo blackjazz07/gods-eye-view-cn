@@ -3727,6 +3727,108 @@ test('a genuinely different refused call still gets its own output', async () =>
   assert.deepEqual(outputs, ['call_one', 'call_two'], 'each distinct call is answered');
 });
 
+/** The THIRD server surface: the call inside response.done's output array. */
+function lateToolDoneEvent(responseId, callId, itemId = 'item_stale') {
+  return {
+    data: JSON.stringify({
+      type: 'response.done',
+      response_id: responseId,
+      response: {
+        id: responseId,
+        status: 'completed',
+        output: [
+          {
+            type: 'function_call',
+            id: itemId,
+            call_id: callId,
+            name: 'fly_to_location',
+            arguments: '{"query":"Paris"}',
+          },
+        ],
+      },
+    }),
+  };
+}
+
+test('a live call announced on every surface runs once and is answered once', async () => {
+  // FIELD FAILURE (2026-10-14). The server announces one call three times —
+  // response.function_call_arguments.done at 02.278 s, response.output_item.done
+  // at 04.897 s, response.done at 04.934 s — and the gap is however long the
+  // assistant keeps speaking after the arguments land, not a constant. The
+  // registry used to expire call ids after 2.5 s, so the second announcement
+  // was treated as a new call: `fly_to_location` executed twice and two
+  // `function_call_output`s went out for one call_id, which Bailian rejects with
+  // "Duplicate function call output for call_id: call_cb688ea3a33f4757a6b1927b"
+  // — surfaced to the operator as a VOICE SYSTEM ERROR tray.
+  const { controller, sent, dispatched } = toolDispatchController();
+  const outputs = [];
+  observeToolOutputs(controller, (callId) => outputs.push(callId));
+  await controller.handleRealtimeEvent(lateToolEvent('resp_live', 'call_one'));
+
+  // The exact trigger: age the claim past any wall-clock window, then run the
+  // bookkeeping the dispatch path performs before every call.
+  for (const key of controller.processedCalls.keys())
+    controller.processedCalls.set(key, performance.now() - 60_000);
+  controller.pruneProcessedCalls();
+
+  await controller.handleRealtimeEvent(lateToolItemEvent('resp_live', 'call_one', 'item_one'));
+  await controller.handleRealtimeEvent(lateToolDoneEvent('resp_live', 'call_one', 'item_one'));
+
+  assert.deepEqual(dispatched, ['fly_to_location'], 'one execution for one call_id');
+  assert.deepEqual(outputs, ['call_one'], 'one function_call_output for one call_id');
+  assert.equal(
+    sent.filter((label) => label === 'client.function_call_output').length,
+    1,
+    'the wire carries a single output',
+  );
+});
+
+test('the wire itself refuses a second output for one call_id', () => {
+  // Defence in depth behind claimCall: the protocol rule is enforced where the
+  // event is actually sent, so no future dispatch path can break it by omission.
+  const { controller, sent } = toolDispatchController();
+  assert.equal(controller.sendToolOutput('call_x', { ok: true }), true);
+  assert.equal(controller.sendToolOutput('call_x', { ok: true }), false, 'refused');
+  assert.equal(
+    sent.filter((label) => label === 'client.function_call_output').length,
+    1,
+    'and the refusal keeps it off the wire',
+  );
+  assert.equal(controller.sendToolOutput('call_y', { ok: true }), true, 'another call still goes out');
+  assert.equal(controller.sendToolOutput('call_x', { ok: true }), false, 'the guard is sticky, not one-shot');
+});
+
+test('a rejected duplicate output is logged, not raised as a session error', () => {
+  // Even with the guard in place, a late rejection of something already handled
+  // must not abort live tools or raise the error tray on a turn that worked.
+  const { controller } = toolDispatchController();
+  const reported = [];
+  controller.reportError = (...args) => reported.push(args);
+  controller.connectionDiagnostics = () => ({});
+  const duplicate = {
+    data: JSON.stringify({
+      type: 'error',
+      error: {
+        type: 'invalid_request_error',
+        message: 'Duplicate function call output for call_id: call_cb688ea3a33f4757a6b1927b',
+        param: 'call_id',
+      },
+    }),
+  };
+  controller.handleRealtimeEvent(duplicate);
+  assert.deepEqual(reported, [], 'a duplicate already answered is not a session failure');
+
+  // Control: any other API error still surfaces, so the branch cannot swallow
+  // real failures.
+  controller.handleRealtimeEvent({
+    data: JSON.stringify({
+      type: 'error',
+      error: { type: 'invalid_request_error', message: 'Unknown tool: fly_nowhere', param: 'name' },
+    }),
+  });
+  assert.equal(reported.length, 1, 'an unrelated rejection still reaches the operator');
+});
+
 test('a claimed Space hold barges in on the assistant; a short tap never does', (t) => {
   const f = createPushToTalkFixture(t);
   const canvas = pushToTalkTarget({ tagName: 'CANVAS', id: 'world-overlay-canvas', tabIndex: 0 });

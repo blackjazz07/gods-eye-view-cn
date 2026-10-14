@@ -208,40 +208,40 @@ export function syncWeatherToggle(enabled) {
   this.weatherToggle.setAttribute('aria-pressed', String(active));
   this.weatherToggle.setAttribute(
     'aria-label',
-    `${active ? 'Disable' : 'Enable'} cockpit weather effects`,
+    `${active ? '禁用' : '启用'}座舱天气效果`,
   );
-  this.weatherToggle.title = `${active ? 'Disable' : 'Enable'} cockpit weather effects`;
-  if (this.weatherState) this.weatherState.textContent = active ? 'ON' : 'OFF';
+  this.weatherToggle.title = `${active ? '禁用' : '启用'}座舱天气效果`;
+  if (this.weatherState) this.weatherState.textContent = active ? '开' : '关';
 }
 
 export function setVisionMode(mode, { revealParameters = false } = {}) {
   const next = normalizeCockpitVisionMode(mode);
   this.visionMode = next;
   const labels = {
-    optical: 'NORMAL',
+    optical: '标准',
     crt: 'CRT',
-    nvg: 'NVG',
-    thermal: 'FLIR',
-    anime: 'ANIME',
-    noir: 'NOIR',
-    snow: 'SNOW',
+    nvg: '夜视',
+    thermal: '热成像',
+    anime: '动漫',
+    noir: '暗黑',
+    snow: '雪景',
   };
   const names = {
-    optical: 'Normal',
+    optical: '标准',
     crt: 'CRT',
-    nvg: 'Night vision',
-    thermal: 'Thermal',
-    anime: 'Anime',
-    noir: 'Noir',
-    snow: 'Snow',
+    nvg: '夜视',
+    thermal: '热成像',
+    anime: '动漫',
+    noir: '暗黑',
+    snow: '雪景',
   };
   if (this.visionCurrent) {
     this.visionCurrent.dataset.cockpitVision = next;
     this.visionCurrent.setAttribute(
       'aria-label',
-      `Current cockpit vision style: ${names[next]}. Activate for next style.`,
+      `当前座舱视觉风格：${names[next]}。点击切换到下一个风格。`,
     );
-    this.visionCurrent.title = `Current style: ${names[next]} — click for next`;
+    this.visionCurrent.title = `当前风格：${names[next]} — 点击切换下一个`;
   }
   if (this.visionCurrentLabel)
     this.visionCurrentLabel.textContent = labels[next];

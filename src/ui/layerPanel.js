@@ -9,19 +9,19 @@ import {
 } from '../keySetupCore.mjs';
 import { createWeatherPanel } from './weatherPanel.js';
 const FEED_STATE_LABELS = Object.freeze({
-  nominal: 'ON',
-  loading: 'LOADING',
-  degraded: 'DEGRADED',
-  stale: 'STALE',
-  partial: 'PARTIAL',
-  fallback: 'FALLBACK',
-  unavailable: 'UNAVAILABLE',
+  nominal: '开',
+  loading: '加载中',
+  degraded: '降级',
+  stale: '陈旧',
+  partial: '部分',
+  fallback: '备用',
+  unavailable: '不可用',
 });
 
 // Presentation order is independent of catalog registration and startup order.
 const PANEL_GROUPS = [
   {
-    label: 'Movement',
+    label: '移动',
     ids: [
       'satellites',
       'flights',
@@ -34,11 +34,11 @@ const PANEL_GROUPS = [
     ],
   },
   {
-    label: 'Cameras',
+    label: '摄像头',
     ids: ['cctv', 'recent-imagery', 'street-level'],
   },
   {
-    label: 'Infrastructure',
+    label: '基础设施',
     ids: [
       'alpr-cameras',
       'military-installations',
@@ -48,11 +48,11 @@ const PANEL_GROUPS = [
     ],
   },
   {
-    label: 'Events',
+    label: '事件',
     ids: ['rocket-launches', 'earthquakes', 'local-firms', 'fire-perimeters'],
   },
   {
-    label: 'Weather',
+    label: '天气',
     ids: [
       'wind',
       'weather-radar',
@@ -62,7 +62,7 @@ const PANEL_GROUPS = [
     ],
   },
   {
-    label: 'Utilities',
+    label: '工具',
     ids: ['directions', 'radio'],
   },
 ];
@@ -73,13 +73,13 @@ const PANEL_POSITIONS = new Map(
   PANEL_ORDER.map(({ id }, index) => [id, index]),
 );
 const PANEL_LABELS = {
-  'ais-live-vessels': 'Live Vessels',
-  bikeshare: 'Bike Share',
-  cctv: 'Cameras',
-  'street-level': 'Street Level',
-  'alpr-cameras': 'Mapped ALPR Cameras',
-  'local-datacenters': 'Data Centers',
-  'local-firms': 'Active Fires',
+  'ais-live-vessels': '实时船只',
+  bikeshare: '共享单车',
+  cctv: '摄像头',
+  'street-level': '街景',
+  'alpr-cameras': '已映射 ALPR 摄像头',
+  'local-datacenters': '数据中心',
+  'local-firms': '活跃火灾',
 };
 
 function panelLabel(layer) {
@@ -633,12 +633,12 @@ export class LayerPanel {
     button.textContent = transitioning
       ? layer.lifecycleState.toUpperCase()
       : uncertain
-        ? 'UNCERTAIN'
+        ? '不确定'
         : layer.enabled || unavailable
           ? FEED_STATE_LABELS[feedState]
-          : 'OFF';
+          : '关';
     const keyGuidance = unavailable
-      ? String(layer.stats.error || 'Data source unavailable')
+      ? String(layer.stats.error || '数据源不可用')
       : layerKeyRequirementTooltip(layer);
     // Name the missing key on the control itself: a row reading KEY REQUIRED
     // without saying WHICH key leaves a dead control and no next step. Empty

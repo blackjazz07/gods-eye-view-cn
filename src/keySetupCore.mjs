@@ -53,11 +53,11 @@ export const KEY_SETUP_KEYS = Object.freeze([
     hidden: true,
   }),
   Object.freeze({
-    id: 'openai',
-    title: 'OPENAI',
-    unlocks: 'Voice control — API key or ChatGPT OAuth',
-    getUrl: 'https://platform.openai.com/api-keys',
-    envVars: Object.freeze(['OPENAI_API_KEY']),
+    id: 'bailian',
+    title: 'ALIYUN BAILIAN',
+    unlocks: 'Voice control — DashScope API key',
+    getUrl: 'https://bailian.console.aliyun.com/?apiKey=1',
+    envVars: Object.freeze(['DASHSCOPE_API_KEY', 'DASHSCOPE_WORKSPACE_ID']),
     tier: 'metered',
   }),
   Object.freeze({

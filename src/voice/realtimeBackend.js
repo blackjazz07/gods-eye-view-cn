@@ -1,10 +1,10 @@
 import { DEFAULT_VOICE_TIER, resolveVoiceModel } from './voiceCost.js';
 
-/** Realtime-compatible token and SDP requests, independent of microphone/UI ownership. */
+/** Bailian Realtime session-config and SDP requests, independent of mic/UI ownership. */
 export function createRealtimeBackend({
-  tokenEndpoint = '/api/realtime/token',
-  callsEndpoint = 'https://api.openai.com/v1/realtime/calls',
-  tokenTransport = (...args) => fetch(...args),
+  sessionEndpoint = '/api/realtime/session',
+  sdpEndpoint = '/api/realtime/sdp',
+  sessionTransport = (...args) => fetch(...args),
   connectionTransport = (...args) => fetch(...args),
   timeoutMs = 30_000,
   signal: lifetime,
@@ -14,21 +14,21 @@ export function createRealtimeBackend({
       [lifetime, signal, AbortSignal.timeout(timeoutMs)].filter(Boolean),
     );
   return Object.freeze({
-    protocol: 'openai-realtime',
-    async requestToken({
-      tier = DEFAULT_VOICE_TIER,
-      authMode = 'api-key',
-      signal,
-    } = {}) {
+    protocol: 'bailian-realtime',
+    /**
+     * Fetch the `session.update` config (instructions, tools, voice, audio
+     * format) the browser applies over the data channel. Bailian has no
+     * ephemeral client-secret mint step.
+     */
+    async requestSession({ tier = DEFAULT_VOICE_TIER, signal } = {}) {
       signal = scoped(signal);
       signal.throwIfAborted();
-      const separator = tokenEndpoint.includes('?') ? '&' : '?';
+      const separator = sessionEndpoint.includes('?') ? '&' : '?';
       const query = new URLSearchParams({
         tier: resolveVoiceModel(tier).tier,
       });
-      if (authMode === 'oauth') query.set('auth', 'oauth');
-      const url = `${tokenEndpoint}${separator}${query}`;
-      const response = await tokenTransport(url, {
+      const url = `${sessionEndpoint}${separator}${query}`;
+      const response = await sessionTransport(url, {
         signal,
         cache: 'no-store',
         redirect: 'error',
@@ -40,60 +40,53 @@ export function createRealtimeBackend({
         const reason =
           typeof data?.error === 'string' ? data.error : data?.error?.message;
         throw new Error(
-          reason || `Realtime token failed: HTTP ${response.status}`,
+          reason || `Realtime session config failed: HTTP ${response.status}`,
         );
       }
-      const token =
-        data?.value || data?.client_secret?.value || data?.client_secret;
-      if (typeof token !== 'string' || !token)
+      const session = data?.session;
+      if (!session || typeof session !== 'object')
         throw new Error(
-          'Realtime token response did not include a client secret',
-        );
-      const expiresAt = data?.expires_at ?? data?.client_secret?.expires_at;
-      if (
-        expiresAt != null &&
-        (!Number.isFinite(expiresAt) || expiresAt * 1000 <= Date.now())
-      )
-        throw new Error(
-          'Realtime client secret has expired; reconnect to request a new one',
+          'Realtime session response did not include a session config',
         );
       return {
-        token,
+        session,
         model:
-          response.headers?.get?.('X-GEV-Voice-Model') ||
-          data?.session?.model ||
-          null,
+          response.headers?.get?.('X-GEV-Voice-Model') || data?.model || null,
         tier: response.headers?.get?.('X-GEV-Voice-Tier') || null,
         transcribeModel:
           response.headers?.get?.('X-GEV-Voice-Transcribe-Model') || null,
-        expiresAt,
       };
     },
-    async negotiate({ offerSdp, credential, signal }) {
+    /**
+     * Proxy the Offer SDP through the server, which forwards it to Bailian's
+     * WebRTC endpoint and returns the Answer SDP. The API key never reaches the
+     * browser, so no Authorization header is set here.
+     */
+    async negotiate({ offerSdp, model, signal }) {
       signal = scoped(signal);
       signal.throwIfAborted();
-      if (
-        credential.expiresAt != null &&
-        credential.expiresAt * 1000 <= Date.now()
-      )
-        throw new Error(
-          'Realtime client secret has expired; reconnect to request a new one',
-        );
-      const response = await connectionTransport(callsEndpoint, {
+      const query = new URLSearchParams();
+      if (model) query.set('model', model);
+      const separator = sdpEndpoint.includes('?') ? '&' : '?';
+      const url = `${sdpEndpoint}${separator}${query}`;
+      const response = await connectionTransport(url, {
         method: 'POST',
         body: offerSdp,
         signal,
         redirect: 'error',
         cache: 'no-store',
-        headers: {
-          Authorization: `Bearer ${credential.token}`,
-          'Content-Type': 'application/sdp',
-        },
+        headers: { 'Content-Type': 'application/sdp' },
       });
       signal.throwIfAborted();
       if (!response.ok) {
+        const data = await response.json().catch(() => null);
         await response.body?.cancel?.().catch(() => {});
-        throw new Error(`Realtime SDP failed: HTTP ${response.status}`);
+        const reason = data?.detail || data?.error;
+        throw new Error(
+          reason
+            ? `Realtime SDP failed: HTTP ${response.status} (${reason})`
+            : `Realtime SDP failed: HTTP ${response.status}`,
+        );
       }
       const answer = await response.text();
       signal.throwIfAborted();

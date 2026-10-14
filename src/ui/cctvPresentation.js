@@ -51,7 +51,7 @@ export function _renderCctvState(state) {
 
   if (this._cctvEnableBtn) {
     this._cctvEnableBtn.classList.toggle('active', enabled);
-    this._cctvEnableBtn.textContent = enabled ? 'CCTV ON' : 'CCTV OFF';
+    this._cctvEnableBtn.textContent = enabled ? 'CCTV 开' : 'CCTV 关';
   }
 
   if (this._cctvSelect) {
@@ -98,27 +98,21 @@ export function _renderCctvState(state) {
     const mode = state?.coverageMode || (state?.showCoverage ? 'on' : 'off');
     this._cctvCoverageBtn.classList.toggle('active', mode !== 'off');
     this._cctvCoverageBtn.textContent =
-      mode === 'viewshed'
-        ? 'VIEWSHED ON'
-        : mode === 'on'
-          ? 'COVERAGE ON'
-          : 'COVERAGE OFF';
+      mode === 'viewshed' ? '视域开' : mode === 'on' ? '覆盖开' : '覆盖关';
     this._cctvCoverageBtn.disabled = !enabled;
   }
 
   if (this._cctvAutoHopBtn) {
     const autoHop = !!state?.autoHop;
     this._cctvAutoHopBtn.classList.toggle('active', autoHop);
-    this._cctvAutoHopBtn.textContent = autoHop ? 'AUTO HOP ON' : 'AUTO HOP OFF';
+    this._cctvAutoHopBtn.textContent = autoHop ? '自动跳转开' : '自动跳转关';
     this._cctvAutoHopBtn.disabled = !enabled;
   }
 
   if (this._cctvProjectionBtn) {
     const showProjection = state?.showProjection !== false;
     this._cctvProjectionBtn.classList.toggle('active', showProjection);
-    this._cctvProjectionBtn.textContent = showProjection
-      ? 'PROJECTION ON'
-      : 'PROJECTION OFF';
+    this._cctvProjectionBtn.textContent = showProjection ? '投影开' : '投影关';
     this._cctvProjectionBtn.disabled = !enabled;
   }
 
@@ -154,12 +148,12 @@ export function _renderCctvState(state) {
       const calBadge = activeCamera.calBadge
         ? this._calBadgeLabel(activeCamera.calBadge)
         : '';
-      const projLabel = state?.showProjection !== false ? 'MONITOR' : 'OFF';
-      this._cctvMeta.textContent = `${activeCamera.city} · HDG ${Math.round(activeCamera.headingDeg)}° · FOV ${Math.round(activeCamera.fovDeg)}° · RANGE ${Math.round(activeCamera.rangeM)}m · ${projLabel}${calBadge ? ` · ${calBadge}` : ''} · ${provider}${credit}${statusMsg}`;
+      const projLabel = state?.showProjection !== false ? '监视' : '关';
+      this._cctvMeta.textContent = `${activeCamera.city} · 航向 ${Math.round(activeCamera.headingDeg)}° · 视野 ${Math.round(activeCamera.fovDeg)}° · 距离 ${Math.round(activeCamera.rangeM)}m · ${projLabel}${calBadge ? ` · ${calBadge}` : ''} · ${provider}${credit}${statusMsg}`;
     } else if (cameras.length > 0) {
       this._cctvMeta.textContent = enabled
-        ? `${cameras.length} cameras loaded · click a camera to activate`
-        : `${cameras.length} cameras loaded · enable CCTV to activate`;
+        ? `${cameras.length} 个摄像头已加载 · 点击摄像头激活`
+        : `${cameras.length} 个摄像头已加载 · 启用 CCTV 激活`;
     } else {
       this._cctvMeta.textContent = 'Enable CCTV to load camera intersections';
     }
