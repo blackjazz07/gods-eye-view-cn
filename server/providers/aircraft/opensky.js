@@ -1,6 +1,7 @@
 import { normalizeAdsbLolPointResponse } from '../../../src/data/adsbLolFallback.js';
 import {
   coalesceProxyRequest,
+  describeFetchFailure,
   readResponseJsonCapped,
 } from '../common/http.js';
 import { requiredFiniteQueryNumber } from '../common/query.js';
@@ -50,7 +51,7 @@ async function fetchOpenSkyStates(headers) {
       if (attempt >= 2) throw error;
       console.warn(
         '[OpenSky] global snapshot attempt failed, retrying:',
-        error?.message || error,
+        describeFetchFailure(error),
       );
     }
   }
@@ -178,7 +179,7 @@ export async function getOpenSkyToken() {
       if (!_openskyAuthWarned) {
         console.warn(
           '[OpenSky] OAuth token request failed:',
-          err?.message || String(err),
+          describeFetchFailure(err),
         );
         _openskyAuthWarned = true;
       }
@@ -323,7 +324,7 @@ async function fetchAdsbLolPointFallback(req) {
     return { ...record, cacheStatus: request.shared ? 'INFLIGHT' : 'MISS' };
   } catch (error) {
     if (!request.shared && error?.name !== 'AbortError') {
-      console.warn('[adsb.lol Flights Fallback]', error?.message || error);
+      console.warn('[adsb.lol Flights Fallback]', describeFetchFailure(error));
     }
     return cached ? { ...cached, cacheStatus: 'STALE' } : null;
   }
@@ -674,7 +675,10 @@ export function openSkyProxy() {
         );
         res.end(body);
       } catch (e) {
-        console.error('[OpenSky Proxy]', e.message);
+        // Both attempts are already spent here. Name the transport reason
+        // instead of the bare "fetch failed" wrapper: DNS, TCP reset, TLS and
+        // our own timeout budget all arrive as the same message otherwise.
+        console.error('[OpenSky Proxy]', describeFetchFailure(e));
         if (_openskyCacheBody) {
           const cachedMeta = _openskyCacheMeta || {
             requestedMode: normalizeOpenSkyAuthMode(

@@ -1,5 +1,18 @@
 # Changelog
 
+- A failed flight fetch now logs why it failed. `fetch` rejects with a bare
+  `TypeError: fetch failed` and keeps the actual reason in `error.cause`, so the
+  OpenSky and adsb.lol proxies printed the same useless line whether DNS did not
+  resolve, the peer reset the connection, the TLS handshake died, or our own
+  10 s per-attempt budget ran out. Both proxies (and the OpenSky OAuth token
+  request and regional fallback) now log `describeFetchFailure(...)` from
+  `server/providers/common/http.js`, which walks the cause chain, folds in an
+  AggregateError's per-address branches, and names an abort explicitly — e.g.
+  `TypeError: fetch failed <- ECONNRESET: Client network socket disconnected
+  before secure TLS connection was established`. Responses stay sanitized; only
+  the server-side log gains detail. `docs/opensky-auth.md` documents how to read
+  the three lines and what each reason implies.
+
 - The WebRTC data-channel byte budget is resolved in one place and is never
   assumed to be zero. `src/voice/dataChannelBudget.js` reads
   `a=max-message-size` from the answer SDP, prefers the transport's negotiated

@@ -64,3 +64,36 @@ Useful reasons:
 - `basic_invalid_credentials`: username/password rejected
 - `missing_basic_creds`: basic mode missing user/pass
 - `rate_limited`: OpenSky throttling
+
+### `fetch failed` in the server log
+
+Two lines in a row are one failed cycle, not two problems:
+
+```
+[OpenSky] global snapshot attempt failed, retrying: <reason>
+[OpenSky Proxy] <reason>
+```
+
+The snapshot is attempted twice, 10 s each; the first line is the retry and the
+second one is the second attempt giving up. Both then fall back to the last-good
+cached body (`X-OpenSky-Cache: STALE`) and then to a 250 nm adsb.lol regional
+snapshot (`X-Flight-Source: adsb.lol`), so the layer keeps rendering either way.
+
+`<reason>` names the transport-level cause, read from the `cause` chain:
+
+- `... <- ENOTFOUND: getaddrinfo ENOTFOUND opensky-network.org` — the name does
+  not resolve here. Check DNS, VPN or hosts-file entries.
+- `... <- ECONNRESET` / `... <- ECONNREFUSED` — the peer or a middlebox tore the
+  connection down. Common on filtered routes; a proxy/VPN usually fixes it.
+- `TimeoutError: The operation was aborted due to timeout` — no answer within
+  the 10 s per-attempt budget. The global snapshot is ~1.4 MB, so a slow link
+  reaches this before a broken one does.
+- `... <- UNABLE_TO_VERIFY_LEAF_SIGNATURE` (or another TLS code) — a TLS
+  inspection appliance is in the path.
+
+If the host reaches OpenSky only through a proxy: Node's `fetch` ignores
+`HTTP_PROXY`/`HTTPS_PROXY` unless the server is started with
+`NODE_USE_ENV_PROXY=1` (Node 24+). Without it the proxy is bypassed and a direct
+connection is attempted, which is the usual cause of a reset or a timeout on a
+proxied network.
+

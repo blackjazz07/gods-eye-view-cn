@@ -14,6 +14,8 @@
  *
  * @returns {import('vite').Plugin}
  */
+import { describeFetchFailure } from '../common/http.js';
+
 export function adsbLolProxy() {
   /** @type {string|null} Cached upstream JSON body. */
   let _cache = null;
@@ -144,7 +146,7 @@ export function adsbLolProxy() {
             : {},
         );
       } catch (e) {
-        console.error('[adsb.lol Proxy]', e.message);
+        console.error('[adsb.lol Proxy]', describeFetchFailure(e));
         if (_cache) {
           serve(res, 200, _cache, 'STALE');
           return;

@@ -193,6 +193,84 @@ test('OpenSky global snapshot attempts are time-limited, retried once, then fall
   assert.equal(stalled.response.headers['x-flight-source'], 'adsb.lol');
 });
 
+test('OpenSky fetch failures log the transport cause, not the bare wrapper', async (t) => {
+  environment(t, {
+    OPENSKY_CLIENT_ID: undefined,
+    OPENSKY_CLIENT_SECRET: undefined,
+    OPENSKY_AUTH_MODE: 'anon',
+    OPENSKY_USERNAME: undefined,
+    OPENSKY_PASSWORD: undefined,
+  });
+  const logs = [];
+  const record = (...args) => logs.push(args.map(String).join(' '));
+  t.mock.method(console, 'warn', record);
+  t.mock.method(console, 'error', record);
+  // What undici actually rejects with: everything useful lives in `cause`.
+  const unreachable = () =>
+    Promise.reject(
+      new TypeError('fetch failed', {
+        cause: Object.assign(
+          new Error('getaddrinfo ENOTFOUND opensky-network.org'),
+          { code: 'ENOTFOUND' },
+        ),
+      }),
+    );
+  t.mock.method(globalThis, 'fetch', async (url) => {
+    if (url.includes('/states/') || url.includes('/lat/')) return unreachable();
+    throw Error(`Unexpected URL: ${url}`);
+  });
+  const fresh = await import(
+    `../../server/providers/aircraft/opensky.js?cause=${Math.random()}`
+  );
+  const response = await install(fresh.openSkyProxy())(
+    '/api/flights',
+    '?lat=30&lon=-97',
+  );
+  // No cache and no regional fallback, so the honest 502 stays honest.
+  assert.equal(response.statusCode, 502);
+  const retry = logs.find((line) => line.includes('attempt failed, retrying'));
+  assert.ok(retry, 'the retry warning is still logged');
+  assert.match(
+    retry,
+    /ENOTFOUND/,
+    'it names the cause instead of "fetch failed"',
+  );
+  const failure = logs.find((line) => line.includes('[OpenSky Proxy]'));
+  assert.ok(failure, 'the exhausted attempts are still reported');
+  assert.match(failure, /TypeError: fetch failed/);
+  assert.match(failure, /ENOTFOUND/);
+});
+
+test('fetch failure details survive aborts, aggregate branches and odd input', async () => {
+  const { describeFetchFailure } =
+    await import('../../server/providers/common/http.js');
+  // Our own AbortSignal.timeout budget must be distinguishable from a dead peer.
+  const aborted = new DOMException(
+    'The operation was aborted due to timeout',
+    'TimeoutError',
+  );
+  assert.match(describeFetchFailure(aborted), /TimeoutError/);
+  // undici reports one failure per resolved address as an AggregateError.
+  const aggregate = new TypeError('fetch failed', {
+    cause: new AggregateError(
+      [
+        Object.assign(new Error('connect ECONNREFUSED 194.209.200.34:443'), {
+          code: 'ECONNREFUSED',
+        }),
+        Object.assign(new Error('connect ETIMEDOUT 194.209.200.34:443'), {
+          code: 'ETIMEDOUT',
+        }),
+      ],
+      'all addresses failed',
+    ),
+  });
+  const detail = describeFetchFailure(aggregate);
+  assert.match(detail, /ECONNREFUSED/);
+  assert.match(detail, /ETIMEDOUT/);
+  assert.equal(describeFetchFailure('plain string'), 'plain string');
+  assert.equal(describeFetchFailure(undefined), 'undefined');
+});
+
 test('military aircraft route preserves fresh cache and stale response after upstream failure', async (t) => {
   let now = Date.now();
   let calls = 0;
