@@ -1,5 +1,36 @@
 # Changelog
 
+- `npm run net:check` now settles the two proxy mistakes that fail invisibly. It
+  sends a real `CONNECT` to the configured port and reports which protocol the
+  inbound actually speaks: an inbound that is *mixed* (HTTP and SOCKS on one
+  port, as v2rayN's 10808 is on this host) is recognised instead of being
+  mistaken for a SOCKS-only port that has to be replaced, and a genuinely
+  SOCKS-only port is named as the reason an `http://` value dies during the TLS
+  handshake. It also applies `NO_PROXY` with the suffix semantics Node uses and
+  reports any probe host left uncovered, because `.aliyun.com` does **not**
+  cover `dashscope.aliyuncs.com` — one missing letter there silently sends every
+  domestic API out through a foreign exit node and back.
+  `上帝之眼_启动.bat` no longer hard-codes the pre-rename directory (`%~dp0`
+  resolves its own folder, which is why the variables never reached the server
+  once the project was renamed) and its `NO_PROXY` now covers `.aliyuncs.com`.
+
+- `npm run net:check` reports whether the process that runs the dev server can
+  actually reach the live upstreams, and why not. Node's `fetch` reads no system
+  proxy, so a browser that works through v2rayN says nothing about the flights
+  layer; the script prints the visible proxy variables, whether
+  `NODE_USE_ENV_PROXY=1` is set (without it they are read by nothing), whether
+  the proxy port accepts a connection, and then probes OpenSky, adsb.lol and the
+  Bailian endpoint, naming the transport cause of each failure via
+  `describeFetchFailure`. `docs/opensky-auth.md` documents what the server needs
+  (a proxy port that speaks HTTP, `NO_PROXY` covering `localhost` and
+  `.aliyuncs.com`, and the env flag) plus v2rayN TUN mode as the transparent
+  alternative.
+
+- The Bailian HUD summary logs why a request failed. Its catch printed a bare
+  `[hud-summary] request failed`, which cannot distinguish a refused connection
+  from a reset endpoint, and it now reports the `cause` chain like the flight
+  proxies do.
+
 - A failed flight fetch now logs why it failed. `fetch` rejects with a bare
   `TypeError: fetch failed` and keeps the actual reason in `error.cause`, so the
   OpenSky and adsb.lol proxies printed the same useless line whether DNS did not

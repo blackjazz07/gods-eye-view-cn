@@ -3,6 +3,7 @@ import {
   keylessHudSummaryResponse,
 } from '../../../src/hudSummaryResponse.js';
 import { enforceRateLimit, bailianRateLimiter } from './rate-limit.js';
+import { describeFetchFailure } from '../common/http.js';
 import { readRequestBody } from '../common/request.js';
 import {
   DASHSCOPE_HUD_SUMMARY_MODEL_DEFAULT,
@@ -84,8 +85,10 @@ async function handleHudSummary(req, res) {
         error: response.ok ? null : 'Bailian HUD summary request failed',
       }),
     );
-  } catch {
-    console.warn('[hud-summary] request failed');
+  } catch (error) {
+    // `fetch` hides the real reason in `error.cause`; without it this line says
+    // nothing about whether the endpoint was unreachable, reset, or slow.
+    console.warn('[hud-summary] request failed:', describeFetchFailure(error));
     res.statusCode = 502;
     res.setHeader('Content-Type', 'application/json');
     res.end(

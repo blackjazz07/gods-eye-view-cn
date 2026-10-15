@@ -291,9 +291,11 @@
     "exports": ["./server/providers/bailian"],
     "modules": [
       "src/hudLayoutPolicy.js",
+      "server/providers/common/http.js",
       "server/providers/common/rate-limit.js",
       "server/providers/common/request.js",
       "server/providers/common/source-root.js",
+      "src/sources/httpBody.js",
       "server/providers/bailian.js",
       "server/providers/bailian/constants.js",
       "server/providers/bailian/debug-log.js",
