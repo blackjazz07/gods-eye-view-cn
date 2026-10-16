@@ -195,11 +195,7 @@ _座舱模式为什么存在：你正乘着一架真实飞机飞越真实地形 
 
 ## 🎙️ 与它对话
 
-> 语音可以使用 **阿里云 API key**，也可以在同一台机器上选择性地使用已登录的 **ChatGPT/Codex OAuth** 会话。API Key 路径仍然是默认方式。在 Provider Settings 中选择 ChatGPT OAuth，会复用本地已有的登录，或启动 Codex 浏览器登录流程并在完成后选用 OAuth。阿里云 key 仍然驱动 **AI HUD 摘要**：对当前视图的一句简短、五个词的情报风格读解，随你移动而不断重生成。
-
-OAuth 选项是实验性的。阿里云记录了 ChatGPT 套餐在 [Responses API](https://developers.openai.com/siwc/token-sharing-open-source/models-and-inference) 上的用量规则；但复用 Codex token 的第三方 Realtime 合约尚未得到确认。token 成功签发，并不代表计费或支持条款已经成立。
-
-GEV 会读取 Codex 的文件凭据，但不会写入或刷新它们。它会检查 token 的结构与有效期，并把已过期的登录报告为需要重新认证。登录按钮会执行 `codex login`，只允许一个待处理尝试，并会报告退出失败或两分钟超时。`CODEX_HOME` 必须与 Codex 实际使用的目录一致。如果 `CODEX_AUTH_JSON` 指向别处，请先单独登录或修正这一不一致，再使用该按钮。Codex 凭据存储必须使用 `auth.json`；仅存于 Keychain 和内存中的存储方式 GEV 无法读取。在 Windows 上，登录按钮可能无法启动通过 npm 安装的 Codex；请自行运行 `codex login`，然后选择 OAuth。参见 [Codex 凭据存储](https://learn.chatgpt.com/docs/auth#credential-storage)。
+> 语音可以使用 **阿里云 API key**。API Key 路径仍然是默认方式。阿里云 key 仍然驱动 **AI HUD 摘要**：对当前视图的一句简短、五个词的情报风格读解，随你移动而不断重生成。
 
 要做一次实时语音自检，可针对你本地的开发服务器运行 `node scripts/qa-voice-auth.mjs http://127.0.0.1:4189 oauth microphone.wav`。使用的 WAV 需包含三秒前置静音，随后是一段简短的口头回复请求。把 `oauth` 换成 `api-key` 即可检查 API Key 路径。该检查会验证音频输入、完整的口头回复、用量、资源清理与重连。截图与不含凭据的结果会保存在 `.gev-logs/voice-auth/` 下。
 
@@ -245,7 +241,6 @@ _随便问哪儿附近的电台，地球就开始广播 —— 每个电台都�
 
 ---
 
-**💬 或者从 Claude 和 Codex 里提问。** God's Eye View 同时也是一个 MCP 服务器：让 Claude Desktop、Codex 或 ChatGPT 桌面端展示某个地点，实时地球就会直接在对话里打开。配置只需一分钟 —— 见 [docs/MCP_SETUP.md](docs/MCP_SETUP.md)。
 
 ## 🛰️ 地球上有什么
 
