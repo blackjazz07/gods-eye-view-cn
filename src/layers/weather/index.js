@@ -253,7 +253,7 @@ export function createWeatherLayer({
       ? 'Rain radar'
       : lightning
         ? 'Lightning density'
-        : 'Satellite clouds',
+        : '卫星云图',
     icon: radar ? '◉' : lightning ? 'ϟ' : '☁',
     source: 'NOAA nowCOAST · OBSERVED',
     updateInterval: lightning ? 600_000 : 120_000,
@@ -539,45 +539,45 @@ export function createWeatherLayer({
         readout: true,
         summary: {
           label: radar
-            ? 'Rain radar · US'
+            ? '降雨雷达 · 美国'
             : lightning
-              ? 'Lightning density · 15 min'
-              : 'Satellite clouds',
+              ? '闪电密度 · 15 分钟'
+              : '卫星云图',
           coverage: radar
-            ? 'CONUS'
+            ? '美国本土'
             : lightning
-              ? 'Americas + Pacific'
+              ? '美洲 + 太平洋'
               : product === 'clouds'
-                ? 'Global · 60°S–60°N'
-                : 'North America',
+                ? '全球 · 南纬 60°–北纬 60°'
+                : '北美洲',
           shownTime: time,
           maxGapMinutes: maxGap() / 60_000,
           detail: time
-            ? `${followLatest ? 'Observed' : 'History'} · ${utc(time)} · ${lag}${relation}`
+            ? `${followLatest ? '观测' : '历史'} · ${utc(time)} · ${lag}${relation}`
             : missing
-              ? 'Observation unavailable'
-              : 'Waiting for observation',
+              ? '观测不可用'
+              : '正在等待观测',
           status:
             missing ||
             hostStatus ||
             error ||
             diagnostic?.error ||
             (observationDelayed()
-              ? 'Source observations delayed'
+              ? '源观测延迟'
               : manifest?.stale
-                ? 'Stale source'
+                ? '源数据陈旧'
                 : loading
-                  ? 'Loading next frame…'
+                  ? '正在加载下一帧…'
                   : outside
-                    ? 'Map center outside coverage'
+                    ? '地图中心超出覆盖范围'
                     : null),
-          units: radar ? 'dBZ' : lightning ? 'strikes/km²/min ×10³' : '',
+          units: radar ? 'dBZ' : lightning ? '次/km²/分 ×10³' : '',
         },
         chips: [
           ...(satellite
             ? [
-                ['clouds-regional', 'N. America'],
-                ['clouds', 'Global'],
+                ['clouds-regional', '北美洲'],
+                ['clouds', '全球'],
               ].map(([value, label]) => ({
                 id: value,
                 label,
@@ -585,43 +585,43 @@ export function createWeatherLayer({
                 params: { product: value },
                 title:
                   value === 'clouds'
-                    ? 'Hourly global mosaic; usually 2–3 hours delayed'
-                    : 'GOES regional clouds; approximately 5-minute updates',
+                    ? '每小时全球拼图，通常延迟 2–3 小时'
+                    : 'GOES 区域云图，约 5 分钟更新',
               }))
             : []),
           ...(satellite
             ? [
                 {
                   id: 'filtered',
-                  label: 'Clouds only',
+                  label: '仅云顶',
                   active: infrared === 'filtered',
                   params: { infrared: 'filtered' },
                   title:
-                    'Dim everything but the bright, cold cloud tops; a brightness filter, not a cloud mask',
+                    '压暗除明亮冷云顶外的一切；这是亮度滤镜，不是云掩膜',
                 },
                 {
                   id: 'full',
-                  label: 'Full',
+                  label: '完整',
                   active: infrared === 'full',
                   params: { infrared: 'full' },
-                  title: 'The complete infrared image at the chosen opacity',
+                  title: '按所选不透明度显示完整红外影像',
                 },
               ]
             : []),
           ...['light', 'strong'].map((value) => ({
             id: `opacity-${value}`,
-            label: value === 'light' ? 'Soft' : 'Vivid',
+            label: value === 'light' ? '柔和' : '鲜明',
             active: opacity === value,
             params: { opacity: value },
-            title: 'Image opacity; does not alter the observed values',
+            title: '影像不透明度；不改变观测值',
           })),
           {
             id: 'coverage',
             label: radar
-              ? 'View US radar'
+              ? '查看美国雷达'
               : lightning
-                ? 'View Americas & Pacific'
-                : 'View coverage',
+                ? '查看美洲与太平洋'
+                : '查看覆盖范围',
             disabled: !manifest || !runNavigation,
             params: { focus: true },
           },
@@ -632,13 +632,13 @@ export function createWeatherLayer({
                 label: String(label),
                 color,
                 blurb: lightning
-                  ? `${label} strikes/km²/min ×10³ (15-minute density)`
-                  : `${label} dBZ radar reflectivity`,
+                  ? `${label} 次/km²/分 ×10³（15 分钟密度）`
+                  : `${label} dBZ 雷达反射率`,
               }))
             : [],
         info: hostHidden
           ? hostStatus
-          : `${radar ? 'RADAR REFLECTIVITY · dBZ' : lightning ? 'LIGHTNING DENSITY · 15 min accumulation' : product === 'clouds' ? 'GLOBAL INFRARED · hourly' : 'GOES INFRARED · ~5 min'}\n${time ? `${followLatest ? 'Latest observation' : 'History'}: ${utc(time)}\n${lag}${current && !followLatest ? ` · frame ${index + 1}/${times.length}` : ''}${loading ? ' · loading' : ''}` : `Observation: unavailable${loading ? ' · loading' : ''}`}${missing ? `\n${missing}` : ''}${manifest?.stale ? '\nSTALE · cached source metadata' : ''}${error || diagnostic?.error ? '\n' + (error || diagnostic.error) : ''}\n${radar ? 'Contiguous US · gaps ≠ no rain' : lightning ? 'Americas + Pacific · not individual strikes\nColor: strikes/km²/min ×10³' : product === 'clouds' ? '60°S–60°N · typically 2–3 h delayed' : 'North America · infrared imagery'}${outside ? '\nMap center is outside source coverage' : ''}${motion?.matches ? (clock ? '\nReduced motion · history playback unavailable' : '\nReduced motion · manual history available') : ''}`,
+          : `${radar ? '雷达反射率 · dBZ' : lightning ? '闪电密度 · 15 分钟累计' : product === 'clouds' ? '全球红外 · 每小时' : 'GOES 红外 · 约 5 分钟'}\n${time ? `${followLatest ? '最新观测' : '历史'}: ${utc(time)}\n${lag}${current && !followLatest ? ` · 第 ${index + 1}/${times.length} 帧` : ''}${loading ? ' · 加载中' : ''}` : `观测：不可用${loading ? ' · 加载中' : ''}`}${missing ? `\n${missing}` : ''}${manifest?.stale ? '\n陈旧 · 已缓存源元数据' : ''}${error || diagnostic?.error ? '\n' + (error || diagnostic.error) : ''}\n${radar ? '美国本土 · 空白不等于无雨' : lightning ? '美洲 + 太平洋 · 非单次落雷\n配色：次/km²/分 ×10³' : product === 'clouds' ? '南纬 60°–北纬 60° · 通常延迟 2–3 小时' : '北美洲 · 红外影像'}${outside ? '\n地图中心超出源覆盖范围' : ''}${motion?.matches ? (clock ? '\n已减少动态 · 历史回放不可用' : '\n已减少动态 · 可手动查看历史') : ''}`,
         infoTitle: lightning
           ? 'NOAA/NWS 15-minute lightning density derived from Vaisala NLDN/GLD360. Coverage 110°E across the Pacific/Americas to 0°, 25°S–80°N. Not a live strike count, global coverage or a safety warning.'
           : radar
@@ -650,19 +650,19 @@ export function createWeatherLayer({
           ? [
               {
                 id: 'region',
-                label: 'REGION',
+                label: '区域',
                 chips: controls.chips.filter(({ params }) => params.product),
               },
               {
                 id: 'image',
-                label: 'IMAGE',
+                label: '图像',
                 chips: controls.chips.filter(({ params }) => params.infrared),
               },
             ]
           : []),
         {
           id: 'opacity',
-          label: 'OPACITY',
+          label: '不透明度',
           chips: controls.chips.filter(({ params }) => params.opacity),
         },
       ];
@@ -677,7 +677,7 @@ export function createWeatherLayer({
     getStats() {
       return {
         count: shownTime() ? 1 : 0,
-        countLabel: isLatest() ? 'Observed' : 'History',
+        countLabel: isLatest() ? '观测' : '历史',
         lastUpdate: shownTime() ? Date.parse(shownTime()) : null,
         loading,
         error: error || rendering?.getDiagnostics().error || null,

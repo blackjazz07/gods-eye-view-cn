@@ -70,10 +70,10 @@ export function createWindLayer({
       validTime:
         formatWindValidTime(manifest?.cycle?.validIso) || 'Unavailable',
       status: loading
-        ? 'Loading forecast'
+        ? '正在加载预报'
         : error ||
           manifest?.reason ||
-          (manifest?.stale ? 'Cached forecast · stale' : 'Model forecast'),
+          (manifest?.stale ? '已缓存预报 · 陈旧' : 'Model forecast'),
     });
     sampledPosition = reading.position || position || null;
     inspectionMarker?.show(sampledPosition);
@@ -86,7 +86,7 @@ export function createWindLayer({
   const unsubscribeClock = clock?.subscribe(notify);
   const layer = {
     id: 'wind',
-    name: 'Wind',
+    name: '风场',
     icon: '🌬',
     source: 'GFS / ECMWF IFS · FORECAST',
     updateInterval: 3600_000,
@@ -290,19 +290,19 @@ export function createWindLayer({
         readout: true,
         summary: {
           label,
-          coverage: 'Global · 1° grid',
+          coverage: '全球 · 1° 网格',
           validTime: manifest?.cycle?.validIso,
           issuedTime: manifest?.cycle?.runIso,
-          detail: `${model === 'ifs' ? 'ECMWF IFS' : 'GFS'} forecast · ${valid || 'Unavailable'}`,
+          detail: `${model === 'ifs' ? 'ECMWF IFS' : 'GFS'} 预报 · ${valid || '不可用'}`,
           status: loading
-            ? 'Loading forecast'
+            ? '正在加载预报'
             : preparing
-              ? 'Preparing flow'
+              ? '正在生成流场'
               : error ||
                 manifest?.reason ||
                 imageryError ||
-                (scalarMissing ? 'Selected field unavailable' : null) ||
-                (manifest?.stale ? 'Cached forecast · stale' : null),
+                (scalarMissing ? '所选要素不可用' : null) ||
+                (manifest?.stale ? '已缓存预报 · 陈旧' : null),
           units: legendUnit,
         },
         chips: [
@@ -313,37 +313,37 @@ export function createWindLayer({
             params: { model: value },
             title:
               value === 'ifs'
-                ? 'ECMWF IFS surface forecast'
-                : 'NOAA GFS surface forecast',
+                ? 'ECMWF IFS 地面预报'
+                : 'NOAA GFS 地面预报',
           })),
           {
             id: 'motion',
             label: diagnostic?.reducedMotion
-              ? 'Reduced motion'
+              ? '已减少动态'
               : paused
-                ? 'Resume'
-                : 'Pause',
+                ? '继续'
+                : '暂停',
             active: motionPaused,
             disabled: Boolean(diagnostic?.reducedMotion),
             params: { paused: !paused },
             title:
-              'Pause visual flow; forecast time does not advance with animation',
+              '暂停画面流动；动画不会推进预报时刻',
           },
           ...['none', 'speed', 'pressure', 'temperature'].map((value) => ({
             id: `overlay-${value}`,
             label: {
-              none: 'None',
-              speed: 'Speed',
-              pressure: 'Pressure',
-              temperature: 'Temperature',
+              none: '无',
+              speed: '风速',
+              pressure: '气压',
+              temperature: '气温',
             }[value],
             active: overlay === value,
             params: { overlay: value },
             title: {
-              none: 'Wind trails with no field shading',
-              speed: 'How hard the surface wind is blowing',
-              pressure: 'Sea-level air pressure: broad highs and lows',
-              temperature: 'Air temperature two meters above the surface',
+              none: '仅风迹，无要素着色',
+              speed: '地面风速大小',
+              pressure: '海平面气压：大尺度高低压',
+              temperature: '地表以上 2 米气温',
             }[value],
           })),
           ...(speedLegendVisible ||
@@ -356,15 +356,15 @@ export function createWindLayer({
             label: value,
             active: units === value,
             params: { units: value },
-            title: 'Wind speed units',
+            title: '风速单位',
           })),
           {
             id: 'read-wind',
-            label: 'Read wind at map center',
+            label: '读取地图中心风场',
             params: { inspect: true },
             disabled: loading || !manifest?.u || manifest?.unavailable,
             title:
-              'Read the forecast at the center of the map without changing selection',
+              '读取地图中心的预报，不改变当前选择',
           },
         ],
         legend:
@@ -373,7 +373,7 @@ export function createWindLayer({
           (overlay === 'none' && !speedLegendVisible)
             ? []
             : legend,
-        info: `${model === 'ifs' ? 'ECMWF IFS' : 'GFS'} forecast · ${label} (${legendUnit})${historyStatus ? `\n${historyStatus}` : ''}\nValid: ${valid || 'Unavailable'}${loading ? ' · loading' : preparing ? ' · preparing' : ''}\nIssued: ${run || 'Unavailable'}${manifest?.stale ? ' · STALE' : ''}${error ? '\n' + error : ''}${scalarMissing ? '\nSelected field unavailable · wind remains visible' : ''}${imageryError && !scalarMissing ? '\n' + imageryError + ' · wind remains visible' : ''}`,
+        info: `${model === 'ifs' ? 'ECMWF IFS' : 'GFS'} 预报 · ${label} (${legendUnit})${historyStatus ? `\n${historyStatus}` : ''}\n有效时刻：${valid || '不可用'}${loading ? ' · 加载中' : preparing ? ' · 生成中' : ''}\n发布时间：${run || '不可用'}${manifest?.stale ? ' · 陈旧' : ''}${error ? '\n' + error : ''}${scalarMissing ? '\n所选要素不可用 · 风场仍可见' : ''}${imageryError && !scalarMissing ? '\n' + imageryError + ' · 风场仍可见' : ''}`,
         infoTitle:
           'Surface wind at 10 m. Approximately 1° global grid. Curves follow the 10 m wind field, lifted 12 km for visibility; display height is not weather altitude. View lighting is for readability. Animation shows flow through one fixed forecast; it does not advance time. Color fields drape the globe basemap or the active photorealistic 3D Tiles.',
       };
@@ -385,12 +385,12 @@ export function createWindLayer({
         chips: controls.chips.filter((chip) => chip.id.startsWith(prefix)),
       });
       controls.summary.settings = [
-        setting('model', 'MODEL', 'model-'),
-        setting('field', 'FIELD', 'overlay-'),
+        setting('model', '模型', 'model-'),
+        setting('field', '要素', 'overlay-'),
         ...(controls.chips.some(({ id }) => id.startsWith('units-'))
-          ? [{ id: 'units', label: 'UNITS', chips: windUnitChips(units) }]
+          ? [{ id: 'units', label: '单位', chips: windUnitChips(units) }]
           : []),
-        setting('motion', 'MOTION', 'motion'),
+        setting('motion', '动画', 'motion'),
       ];
       controls.summary.actions = controls.chips.filter(
         ({ id }) => id === 'read-wind',

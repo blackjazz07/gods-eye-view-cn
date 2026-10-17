@@ -73,13 +73,33 @@ const PANEL_POSITIONS = new Map(
   PANEL_ORDER.map(({ id }, index) => [id, index]),
 );
 const PANEL_LABELS = {
+  satellites: '卫星',
+  flights: '实时航班',
+  military: '军用航班',
+  'local-adsb': '本地 ADS-B',
   'ais-live-vessels': '实时船只',
+  traffic: '道路交通',
+  transit: '公共交通',
   bikeshare: '共享单车',
   cctv: '摄像头',
+  'recent-imagery': '近期影像',
   'street-level': '街景',
   'alpr-cameras': '已映射 ALPR 摄像头',
+  'military-installations': '已映射军事设施',
   'local-datacenters': '数据中心',
+  'telegeography-submarine-cables': '海底光缆',
+  'local-dams': '水坝',
+  'rocket-launches': '航天发射',
+  earthquakes: '地震',
   'local-firms': '活跃火灾',
+  'fire-perimeters': '火场边界',
+  wind: '风场',
+  'weather-radar': '降雨雷达',
+  'weather-satellite': '卫星云图',
+  'weather-lightning': '闪电',
+  'weather-cyclones': '气旋',
+  directions: '路线导航',
+  radio: '广播',
 };
 
 function panelLabel(layer) {
@@ -211,7 +231,7 @@ export class LayerPanel {
     for (const layer of layers) {
       if (!layer.showInTogglePanel) continue;
       const group =
-        PANEL_ORDER[PANEL_POSITIONS.get(layer.id)]?.label ?? 'Other layers';
+        PANEL_ORDER[PANEL_POSITIONS.get(layer.id)]?.label ?? '其他图层';
       if (group && group !== previousGroup) {
         const heading = document.createElement('h3');
         heading.className = 'data-layer-group-heading';
@@ -533,10 +553,10 @@ export class LayerPanel {
     const lifecycleState =
       layer.lifecycleState || (layer.enabled ? 'enabled' : 'disabled');
     if (lifecycleState === 'enabling' || lifecycleState === 'disabling') {
-      return `${lifecycleState.toUpperCase()} · ${source}`;
+      return `${lifecycleState === 'enabling' ? '启用中' : '停用中'} · ${source}`;
     }
     if (layer.lifecycleUncertain) {
-      return `UNCERTAIN · ${source} · lifecycle state requires reconciliation`;
+      return `待确认 · ${source} · 生命周期状态需复核`;
     }
     const presentedError =
       stats.error || stats.lastError || stats.managerRefreshError;

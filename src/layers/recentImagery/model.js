@@ -54,7 +54,7 @@ export const PRODUCTS = Object.freeze({
   }),
   VIIRS: Object.freeze({
     label: 'VIIRS',
-    name: 'Daily overview',
+    name: '每日概览',
     source: 'viirs',
     sensor: 'VIIRS NOAA-21',
     resolutionM: 250,

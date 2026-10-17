@@ -18,7 +18,7 @@ export function createModel({ state: layerState, services, parts, source }) {
       const payload = flight.payload || flight;
       return {
         id: String(flight.id || payload.id || `payload-${index}`),
-        name: payload.name || flight.name || 'Unnamed payload',
+        name: payload.name || flight.name || '未命名载荷',
         type: payload.type?.name || flight.type?.name || null,
         manufacturer: payload.manufacturer?.name || null,
         operator: payload.operator?.name || null,
@@ -191,7 +191,7 @@ export function createModel({ state: layerState, services, parts, source }) {
           id: String(
             launch.id || launch.slug || launch.name || `launch-${date}`,
           ),
-          name: launch.name || 'Unnamed launch',
+          name: launch.name || '未命名发射',
           status: launch.status?.name || 'Unknown',
           launchTime: Number.isFinite(date)
             ? new Date(date).toISOString()

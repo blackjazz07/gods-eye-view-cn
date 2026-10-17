@@ -133,8 +133,8 @@ export function updateContext(info, heading) {
     this.contextDirection.classList.toggle('unknown', relative === null);
   }
   if (this.contextBearing) {
-    if (relative === null) this.contextBearing.textContent = 'BRG —';
-    else if (Math.abs(relative) < 8) this.contextBearing.textContent = 'AHEAD';
+    if (relative === null) this.contextBearing.textContent = '方位 —';
+    else if (Math.abs(relative) < 8) this.contextBearing.textContent = '正前方';
     else
       this.contextBearing.textContent = `${relative < 0 ? 'L' : 'R'} ${String(Math.round(Math.abs(relative))).padStart(3, '0')}°`;
   }

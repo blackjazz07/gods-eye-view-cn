@@ -115,7 +115,7 @@ export function directionsRowControls(state) {
   }));
   chips.push({
     id: 'set-a',
-    label: armed === 'a' ? 'CLICK MAP' : a ? 'A ✓' : 'SET A',
+    label: armed === 'a' ? '点击地图' : a ? 'A ✓' : '设 A',
     active: armed === 'a',
     state: armed === 'a' ? 'active' : 'idle',
     title:
@@ -126,7 +126,7 @@ export function directionsRowControls(state) {
   });
   chips.push({
     id: 'set-b',
-    label: armed === 'b' ? 'CLICK MAP' : b ? 'B ✓' : 'SET B',
+    label: armed === 'b' ? '点击地图' : b ? 'B ✓' : '设 B',
     active: armed === 'b',
     state: armed === 'b' ? 'active' : 'idle',
     title:
@@ -140,26 +140,26 @@ export function directionsRowControls(state) {
     label: '⇄',
     disabled: !(a && b) || routing,
     state: 'idle',
-    title: 'Swap A and B',
+    title: '交换 A 与 B',
     params: { swap: true },
   });
   const flying = Number.isInteger(flightStep);
   chips.push({
     id: 'fly',
-    label: routing ? 'FLY ···' : flying ? 'FLYING' : 'FLY',
+    label: routing ? '飞行 ···' : flying ? '飞行中' : '飞行',
     disabled: !route || routing,
     busy: routing || flying,
     active: flying,
     state: routing || flying ? 'loading' : 'idle',
-    title: route ? 'Fly the camera along the route' : 'Place A and B first',
+    title: route ? '让相机沿路线飞行' : '请先设置 A 与 B',
     params: { fly: true },
   });
   chips.push({
     id: 'clear',
-    label: 'CLEAR',
+    label: '清除',
     disabled: !a && !b && !route,
     state: 'idle',
-    title: 'Remove the route and both markers',
+    title: '移除路线与两个标记',
     params: { clear: true },
   });
   return {
@@ -179,8 +179,8 @@ export function directionsRowControls(state) {
  */
 export const POINTER_TOOL_EXITS = Object.freeze({
   draw: Object.freeze({
-    name: 'Draw',
-    leave: 'press Escape twice to leave Draw',
+    name: '绘制',
+    leave: '连按两次 Esc 退出绘制',
   }),
 });
 
@@ -202,8 +202,8 @@ export function pointerBlockedMessage(owner, which) {
   const endpoint = which === 'b' ? 'B' : 'A';
   const known = POINTER_TOOL_EXITS[id];
   const name = known?.name || id;
-  const leave = known?.leave || `turn ${name} off`;
-  return `${name} is active — ${leave}, then set ${endpoint}`;
+  const leave = known?.leave || `关闭${name}`;
+  return `${name}已开启 —— ${leave}，再设置 ${endpoint}`;
 }
 
 /**
@@ -347,7 +347,7 @@ export function directionsStats(state) {
       lastUpdate,
       error: null,
       loading: true,
-      loadingLabel: 'Routing…',
+      loadingLabel: '正在规划路线…',
       source,
     };
   }
@@ -1037,7 +1037,7 @@ export function createDirectionsLayer({ services, source }) {
       [
         {
           type: 'route',
-          label: 'Directions',
+          label: '路线导航',
           path: _route.geometry.map(([lon, lat]) => ({ lon, lat, height: 0 })),
         },
       ],
@@ -1221,7 +1221,7 @@ export function createDirectionsLayer({ services, source }) {
 
   const directionsLayer = {
     id: 'directions',
-    name: 'Directions',
+    name: '路线导航',
     icon: '🧭',
     source: 'OSM routing',
     updateInterval: 0,

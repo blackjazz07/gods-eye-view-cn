@@ -83,7 +83,7 @@ export function classifyAisFailure(input = {}) {
   if (status === 429) {
     return {
       kind: 'rate-limit',
-      message: 'AISStream rate-limited this key (HTTP 429)',
+      message: 'AISStream 对该密钥触发限流（HTTP 429）',
       retryAfterMs: fromHeader(),
     };
   }
@@ -96,7 +96,7 @@ export function classifyAisFailure(input = {}) {
   if (AUTH_TEXT.test(text)) return { kind: 'auth', message: text };
   if (RATE_TEXT.test(text))
     return { kind: 'rate-limit', message: text, retryAfterMs: fromHeader() };
-  return { kind: 'transport', message: text || 'AISStream websocket error' };
+  return { kind: 'transport', message: text || 'AISStream WebSocket 错误' };
 }
 
 /**
@@ -383,7 +383,7 @@ export function createAisStreamAdapter(options) {
     if (!socket) {
       failGeneration(owner, generation, {
         kind: 'transport',
-        message: 'socket factory returned nothing',
+        message: '套接字工厂未返回对象',
       });
       return;
     }
@@ -398,7 +398,7 @@ export function createAisStreamAdapter(options) {
       abort(socket, 'unsupported-transport');
       failGeneration(owner, generation, {
         kind: 'transport',
-        message: 'AIS socket does not expose ws emitter semantics',
+        message: 'AIS 套接字未提供 ws 事件接口',
       });
       return;
     }

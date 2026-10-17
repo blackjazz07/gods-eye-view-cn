@@ -7,7 +7,7 @@ export function createFrameRateMonitor({ viewer, documentRef = document }) {
   const readout = documentRef.createElement('div');
   readout.className = 'frame-rate-readout';
   readout.hidden = true;
-  readout.textContent = 'FPS —';
+  readout.textContent = '帧率 —';
   readout.title = 'Rendered globe frames per second · toggle with `';
   host.appendChild(readout);
   let removeFrameListener = null;
@@ -27,7 +27,7 @@ export function createFrameRateMonitor({ viewer, documentRef = document }) {
   function show() {
     frames = 0;
     startedAt = performance.now();
-    readout.textContent = 'FPS —';
+    readout.textContent = '帧率 —';
     readout.hidden = false;
     removeFrameListener = frameEvent.addEventListener(() => {
       frames++;

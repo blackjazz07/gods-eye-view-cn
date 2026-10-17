@@ -350,7 +350,7 @@ function getCurrentViewState(result) {
       .map((part) => sentence(part[0].toUpperCase() + part.slice(1)))
       .join(' '),
     display: {
-      title: 'View state',
+      title: '视图状态',
       lines: enabled.map(
         (layer) =>
           `${spokenLabel(layer.name || layer.id, 32)} · ${layer.count ?? 0} · ${layer.feedState || 'nominal'}`,

@@ -170,7 +170,7 @@ export function createVoiceSession({ createAdapter, runner, signal }) {
         adapter.stop(options);
       } finally {
         if (!options.preserveStatus)
-          emit({ type: 'state', state: 'idle', detail: 'Voice off' });
+          emit({ type: 'state', state: 'idle', detail: '语音已关闭' });
       }
     },
     sendText: (text) => !disposed && adapter.sendText(text),

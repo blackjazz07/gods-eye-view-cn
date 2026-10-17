@@ -22,7 +22,7 @@ export function windUnitChips(units) {
     label: value,
     active: units === value,
     params: { units: value },
-    title: 'Wind speed units',
+    title: '风速单位',
   }));
 }
 

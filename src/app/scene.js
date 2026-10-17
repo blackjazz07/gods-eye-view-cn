@@ -42,7 +42,7 @@ export async function createApplicationScene({
       else window.__GOOGLE_MAPS_API_KEY__ = previousKey;
     });
   }
-  loaderStatus.textContent = 'Configuring viewer...';
+  loaderStatus.textContent = '正在配置视图…';
   // Provider attribution stays visible, including clean-view and recording.
   const creditContainer = document.createElement('div');
   creditContainer.id = 'cesium-credits';
@@ -62,7 +62,7 @@ export async function createApplicationScene({
   loaderStatus.textContent =
     googleApiKey || googleTokens || cesiumToken
       ? 'Loading Google 3D Tiles...'
-      : 'Loading the keyless globe...';
+      : '正在加载免密钥地球…';
   const photoreal = await loadPhotorealisticTileset(Cesium, {
     googleApiKey,
     googleTokens,
@@ -95,7 +95,7 @@ export async function createApplicationScene({
     viewer.scene.globe.show = true;
   }
 
-  loaderStatus.textContent = 'Initializing systems...';
+  loaderStatus.textContent = '正在初始化系统…';
 
   const mapStackController = new MapController(viewer, {
     requestRender: governorRequestRender,

@@ -170,7 +170,7 @@ export function updateCockpitSignals(snapshot, unknownCount) {
       key: 'input-status',
       tone: 'warning',
       title: `${unknownCount} INPUT${unknownCount === 1 ? '' : 'S'} UNKNOWN`,
-      detail: sources || 'SOURCE STATUS UNAVAILABLE',
+      detail: sources || '信号源状态不可用',
       target: null,
       timestamp:
         previous.get('input-status')?.timestamp ||

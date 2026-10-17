@@ -48,26 +48,26 @@ function webUsbStatus(receiver, heard, feedState) {
   if (receiver.status === 'error')
     return { status: 'error', error: receiver.message };
   if (receiver.status === 'connecting' || receiver.status === 'tuning')
-    return { loading: true, loadingLabel: 'opening receiver' };
+    return { loading: true, loadingLabel: '正在打开接收机' };
   if (
     feedState?.polling &&
     feedState.configured === null &&
     !receiver.connected
   )
-    return { loading: true, loadingLabel: 'checking decoder feeds' };
+    return { loading: true, loadingLabel: '正在检查解码数据源' };
   if (!receiver.webUsbSupported)
     return {
       status: 'idle',
-      statusMessage: 'WebUSB needs desktop Chrome or Edge',
+      statusMessage: 'WebUSB 需要桌面版 Chrome 或 Edge',
     };
   if (!receiver.connected)
-    return { status: 'idle', statusMessage: 'connect a receiver in Radio' };
+    return { status: 'idle', statusMessage: '请在「广播」中连接接收机' };
   if (receiver.mode !== 'adsb')
-    return { status: 'idle', statusMessage: 'receiver is in FM mode' };
+    return { status: 'idle', statusMessage: '接收机处于 FM 模式' };
   const rate = Number.isFinite(receiver.messagesPerSecond)
-    ? `${receiver.messagesPerSecond} msg/s`
-    : 'listening';
-  return { status: 'streaming', loadingLabel: `${heard} heard · ${rate}` };
+    ? `${receiver.messagesPerSecond} 条/秒`
+    : '监听中';
+  return { status: 'streaming', loadingLabel: `已收报 ${heard} 条 · ${rate}` };
 }
 
 /**
@@ -97,19 +97,19 @@ export function localAdsbStatus({ receiver, feedState, heard }) {
   const source = usbActive ? COMBINED_SOURCE : FEED_SOURCE;
   const live = feedState.feeds.filter((feed) => feed.status === 'live');
   const problems = [describeFeedProblems(feedState.feeds)].filter(Boolean);
-  if (usbActive && receiver.status === 'error') problems.push('USB error');
+  if (usbActive && receiver.status === 'error') problems.push('USB 错误');
   const rate =
     usbActive &&
     receiver.status !== 'error' &&
     Number.isFinite(receiver.messagesPerSecond)
-      ? ` · USB ${receiver.messagesPerSecond} msg/s`
+      ? ` · USB ${receiver.messagesPerSecond} 条/秒`
       : '';
-  const heardText = `${heard} heard`;
+  const heardText = `已收报 ${heard} 条`;
   if (!problems.length) {
     return {
       source,
       status: 'streaming',
-      loadingLabel: `${live.length} ${plural(live.length, 'feed', 'feeds')} live · ${heardText}${rate}`,
+      loadingLabel: `${live.length} 路数据源在线 · ${heardText}${rate}`,
     };
   }
   const problemText = problems.join(' · ');

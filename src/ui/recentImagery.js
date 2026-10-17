@@ -173,7 +173,7 @@ export function createRecentImageryPanel({
 
   // ---- build: every block exists from the start, in its final order ----
   const root = el('section', 'recent-imagery-readout');
-  root.setAttribute('aria-label', 'Recent imagery');
+  root.setAttribute('aria-label', '近期影像');
 
   const actionsHost = el('div', 'ri-block ri-actions-row', root);
   actionsHost.id = 'ri-actions';
@@ -213,11 +213,11 @@ export function createRecentImageryPanel({
 
   const selection = el('section', 'ri-block ri-selection', root);
   selection.id = 'ri-selection';
-  selection.setAttribute('aria-label', 'On the map');
+  selection.setAttribute('aria-label', '地图上');
   const modeGroup = el('div', 'ri-mode', selection);
   modeGroup.id = 'ri-mode';
   modeGroup.setAttribute('role', 'radiogroup');
-  modeGroup.setAttribute('aria-label', 'Mode');
+  modeGroup.setAttribute('aria-label', '模式');
   const modeButtons = new Map(
     MODE_LABELS.map(([mode, label]) => {
       const node = el('button', 'data-toggle-chip ri-mode-btn', modeGroup);
@@ -255,7 +255,7 @@ export function createRecentImageryPanel({
     step: '1',
     value: '100',
   });
-  opacity.setAttribute('aria-label', 'Imagery opacity');
+  opacity.setAttribute('aria-label', '影像不透明度');
   opacityLabel.htmlFor = 'ri-opacity';
   // Its slot is always there; it is only usable while a swipe is live.
   const swap = el('button', 'data-toggle-chip ri-swap', controls, 'SWAP');
@@ -318,8 +318,8 @@ export function createRecentImageryPanel({
         actions: [
           {
             id: 'select-box',
-            label: 'SELECT BOX',
-            title: 'Drag a box on the map (Esc cancels)',
+            label: '框选',
+            title: '在地图上拖出选框（Esc 取消）',
             onClick: () => {
               exportError = null;
               if (tool?.isActive()) tool.cancel('toggle');
@@ -328,8 +328,8 @@ export function createRecentImageryPanel({
           },
           {
             id: 'use-view',
-            label: 'USE VIEW',
-            title: 'Use the current view as the box',
+            label: '用当前视野',
+            title: '把当前视野作为选框',
             onClick: () => {
               exportError = null;
               layer.useCurrentView(viewer);
@@ -337,8 +337,8 @@ export function createRecentImageryPanel({
           },
           {
             id: 'clear',
-            label: 'CLEAR',
-            title: 'Forget the box and its images',
+            label: '清除',
+            title: '清除选框及其影像',
             disabled: !snapshot.box && !snapshot.boxError,
             onClick: () => {
               exportError = null;
@@ -718,7 +718,7 @@ export function createRecentImageryPanel({
     )
       lines.push({
         id: 'overview-scale',
-        text: 'Daily overview shows little detail in a box this small',
+        text: '选框过小，每日概览几乎看不出细节',
         muted: true,
       });
     lines.push({
@@ -735,7 +735,7 @@ export function createRecentImageryPanel({
     details.update([
       {
         id: 'details',
-        title: 'Details',
+        title: '细节',
         open: detailsOpen,
         compact: snapshot.focus ? snapshot.readout : 'Times, coverage, sources',
         blocks: [
@@ -749,7 +749,7 @@ export function createRecentImageryPanel({
                 label: showing
                   ? 'HIDE EMPTY DAYS'
                   : `SHOW EMPTY DAYS · ${hidden}`,
-                title: 'Days the probe found empty in this box',
+                title: '该选框内探测不到影像的日期',
                 disabled: !showing && !hidden,
                 onClick: () => layer.setShowUnavailable(!showing),
               },

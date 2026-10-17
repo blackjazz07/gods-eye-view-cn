@@ -78,7 +78,7 @@ export function createSubject({ state: layerState, services, parts, source }) {
       cohorts: [
         {
           id: 'flights',
-          label: 'Flights',
+          label: '航班',
           source: flightsState.stats.source || SOURCE_LABEL.flights,
           provenance: retainedProvenance(
             'flights',
@@ -97,7 +97,7 @@ export function createSubject({ state: layerState, services, parts, source }) {
         },
         {
           id: 'military',
-          label: 'Military flights',
+          label: '军用航班',
           source: militaryState.stats.source || SOURCE_LABEL.military,
           provenance: retainedProvenance(
             'military',
@@ -116,7 +116,7 @@ export function createSubject({ state: layerState, services, parts, source }) {
         },
         {
           id: 'ais-live-vessels',
-          label: 'AIS vessels',
+          label: 'AIS 船只',
           source: vesselsState.stats.source || SOURCE_LABEL['ais-live-vessels'],
           provenance: retainedProvenance(
             'ais-live-vessels',
@@ -131,7 +131,7 @@ export function createSubject({ state: layerState, services, parts, source }) {
         },
         {
           id: 'military-installations',
-          label: 'Mapped installations',
+          label: '已映射设施',
           source:
             installationsState.stats.source ||
             SOURCE_LABEL['military-installations'],

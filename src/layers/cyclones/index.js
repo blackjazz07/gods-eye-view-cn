@@ -169,7 +169,7 @@ export function createCyclonesLayer({
   }
   const layer = {
     id: 'weather-cyclones',
-    name: 'Cyclone advisories',
+    name: '气旋警报',
     icon: '◉',
     source: 'NOAA NHC / CPHC',
     updateInterval: 300_000,
@@ -341,7 +341,7 @@ export function createCyclonesLayer({
       const controls = {
         readout: true,
         summary: {
-          label: 'Cyclones · NHC / CPHC',
+          label: '气旋 · NHC / CPHC',
           coverage: 'Atlantic · E/C Pacific',
           compact: snapshot?.storms.length
             ? `${snapshot.storms.length} active storm${snapshot.storms.length === 1 ? '' : 's'}${storm ? ` · ${storm.name} selected` : ''}`
@@ -350,7 +350,7 @@ export function createCyclonesLayer({
             ? [
                 {
                   id: 'advisory',
-                  label: 'Official advisory ↗',
+                  label: '官方警报 ↗',
                   href: storm.advisoryUrl,
                 },
               ]
@@ -388,8 +388,8 @@ export function createCyclonesLayer({
         chips: [],
         legend: storm
           ? [
-              { label: 'Advisory center / forecast track', color: '#7fe6ed' },
-              { label: 'Center-track uncertainty cone', color: '#7fe6ed44' },
+              { label: '警报中心 / 预报路径', color: '#7fe6ed' },
+              { label: '中心路径不确定锥', color: '#7fe6ed44' },
             ]
           : [],
         info: storm

@@ -402,7 +402,7 @@ export class SdrController {
       // A failed worker (e.g. its module did not load) never recovers: drop
       // it so the next session builds and configures a fresh one.
       this._discardWorker();
-      this._setState({ status: 'error', message: 'SDR decoder worker failed' });
+      this._setState({ status: 'error', message: 'SDR 解码线程失败' });
       if (this._device) void this.stop({ preserveMessage: true });
     };
     return worker;
@@ -600,7 +600,7 @@ export class SdrController {
     if (!this.state.webUsbSupported) {
       this._setState({
         status: 'unsupported',
-        message: 'WebUSB requires desktop Chrome or Edge',
+        message: 'WebUSB 需要桌面版 Chrome 或 Edge',
       });
       return false;
     }
@@ -1002,7 +1002,7 @@ export class SdrController {
         this._setState({
           connected: false,
           status: 'error',
-          message: 'RTL-SDR sample stream stopped',
+          message: 'RTL-SDR 采样流已中断',
         });
         await this.stop({ preserveMessage: true });
         break;
@@ -1116,7 +1116,7 @@ export class SdrController {
       console.warn('[SDR] Gain change failed:', error);
       this._setState({
         status: 'error',
-        message: 'RTL-SDR gain change failed',
+        message: 'RTL-SDR 增益调整失败',
       });
       return null;
     }
@@ -1268,7 +1268,7 @@ export class SdrController {
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
       this._setState({
         locationStatus: 'unavailable',
-        message: 'Browser location is unavailable',
+        message: '浏览器定位不可用',
       });
       return false;
     }
@@ -1295,7 +1295,7 @@ export class SdrController {
       console.warn('[SDR] Receiver location failed:', error);
       this._setState({
         locationStatus: 'denied',
-        message: 'Receiver location was not granted',
+        message: '未授予接收机位置权限',
       });
       return false;
     }
@@ -1333,7 +1333,7 @@ export class SdrController {
       status: preserveMessage ? this.state.status : idleStatus,
       ...(preserveMessage
         ? {}
-        : { message: message || 'RTL-SDR disconnected' }),
+        : { message: message || 'RTL-SDR 已断开' }),
       snr: null,
       samplesPerSecond: 0,
       workerBlocks: 0,

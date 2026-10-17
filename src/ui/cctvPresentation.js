@@ -155,7 +155,7 @@ export function _renderCctvState(state) {
         ? `${cameras.length} 个摄像头已加载 · 点击摄像头激活`
         : `${cameras.length} 个摄像头已加载 · 启用 CCTV 激活`;
     } else {
-      this._cctvMeta.textContent = 'Enable CCTV to load camera intersections';
+      this._cctvMeta.textContent = '启用 CCTV 以加载摄像头交叉路口';
     }
   }
 

@@ -1761,7 +1761,7 @@ export class SceneDirector {
     // Initialize telemetry accumulator for this run
     this._activeRun = {
       recipeId: `project-${PROJECT_VERSION}`,
-      title: 'Editable Scene Run',
+      title: '可编辑场景运行',
       startedAt: new Date().toISOString(),
       estimatedDurationSec,
       scenesRun: queue.length,
@@ -1784,7 +1784,7 @@ export class SceneDirector {
     } catch (error) {
       this._updateStatus(`Error: ${error.message || 'run failed'}`);
       this._logEvent('scene_run_error', {
-        message: error.message || 'unknown error',
+        message: error.message || '未知错误',
       });
     } finally {
       this._finishRun();
@@ -2177,7 +2177,7 @@ export class SceneDirector {
         this._logEvent('scene_layer_release_error', {
           sceneId: scene.id,
           layerId,
-          message: error?.message || 'unknown error',
+          message: error?.message || '未知错误',
         });
       }
     }

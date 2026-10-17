@@ -291,7 +291,7 @@ export function createAlprCamerasLayer({ source, services } = {}) {
 
   const alprCamerasLayer = {
     id: LAYER_ID,
-    name: 'ALPR Cameras',
+    name: 'ALPR 摄像头',
     icon: '📷',
     source: source.label || 'Mapped camera locations',
     updateInterval: 0,
@@ -372,7 +372,7 @@ export function createAlprCamerasLayer({ source, services } = {}) {
         chips: [
           {
             id: 'find-camera',
-            label: 'SHOW NEAREST',
+            label: '显示最近',
             title: state.viewer?.trackedEntity
               ? 'Stop following the current object before navigating to a camera'
               : 'Move to the nearest loaded camera and show its details',
@@ -383,7 +383,7 @@ export function createAlprCamerasLayer({ source, services } = {}) {
         ],
         legend: [
           {
-            label: 'Camera badges',
+            label: '摄像头标记',
             color: ALPR_COLOR,
             count,
             blurb:

@@ -789,7 +789,7 @@ export function createRecentImageryLayer({
 
   const layer = {
     id: 'recent-imagery',
-    name: 'Recent Imagery',
+    name: '近期影像',
     icon: '🛰',
     source: 'NASA GIBS · HLS + VIIRS',
     updateInterval: 0,
@@ -1331,7 +1331,7 @@ export function createRecentImageryLayer({
             id: 'hls',
             label: 'MORE DETAIL · 30 m',
             active: _sources.hls,
-            title: 'Sentinel-2 and Landsat via HLS, 30 m, every 2–6 days',
+            title: 'Sentinel-2 与 Landsat（经 HLS），30 米，每 2–6 天',
             params: { hls: !_sources.hls },
           },
           {

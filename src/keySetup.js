@@ -98,7 +98,7 @@ function buildRow(documentRef, key) {
     // facts this panel reports, never values it rewrites or deletes.
     const badge = documentRef.createElement('span');
     badge.className = 'key-setup-external';
-    badge.textContent = 'configured externally';
+    badge.textContent = '外部已配置';
     badge.title =
       'Supplied by your environment, Keychain, or launcher — change it where it was set';
     head.append(badge);
@@ -138,7 +138,7 @@ function buildRow(documentRef, key) {
       remove.type = 'button';
       remove.className = 'key-setup-remove';
       remove.dataset.keySetupRemove = JSON.stringify(key.envVars);
-      remove.textContent = 'REMOVE';
+      remove.textContent = '移除';
       remove.title = `Remove ${key.title} from this app's saved keys`;
       fields.append(remove);
     }

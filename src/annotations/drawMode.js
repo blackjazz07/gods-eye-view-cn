@@ -284,20 +284,20 @@ export function closeRing(pairs) {
 
 /** One line of guidance for the person drawing, by state. */
 export function drawHint(session) {
-  if (!session) return 'Pick a shape, then click the map.';
+  if (!session) return '先选择形状，再点击地图。';
   const n = session.vertices.length;
   if (session.shape === 'pin')
     return n
-      ? 'Enter to place the pin, Esc to cancel.'
-      : 'Click where the pin goes.';
+      ? '按回车放置图钉，Esc 取消。'
+      : '点击图钉要放的位置。';
   const need = MIN_VERTICES[session.shape] - n;
-  if (need > 0) return `Click ${need} more point${need === 1 ? '' : 's'}.`;
+  if (need > 0) return `还需再点 ${need} 个点。`;
   if (finishReason(session) === 'degenerate') {
     return session.shape === 'area'
-      ? 'Those points are in a line — move one off it to enclose an area.'
-      : 'That line has no length — click somewhere further away.';
+      ? '这些点在同一直线上 —— 移开其中一个才能围出区域。'
+      : '这条线没有长度 —— 请点得更远一些。';
   }
   const full =
-    n >= MAX_VERTICES ? ` · ${MAX_VERTICES}-point limit reached` : '';
-  return `${formatMeasure(session)} · double-click or Enter to finish, Backspace undoes, Esc cancels.${full}`;
+    n >= MAX_VERTICES ? ` · 已达 ${MAX_VERTICES} 点上限` : '';
+  return `${formatMeasure(session)} · 双击或回车完成，退格撤销，Esc 取消。${full}`;
 }

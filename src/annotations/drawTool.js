@@ -197,10 +197,10 @@ export function initDrawTool({ viewer, annotations }) {
     // a limit rather than the harmless tail of a double-click.
     if (reason === 'full')
       setHint(
-        `That shape already has ${MAX_VERTICES} points — finish it or press Backspace.`,
+        `该形状已达 ${MAX_VERTICES} 点 —— 请完成它或按退格。`,
       );
     else if (reason === 'invalid')
-      setHint('That point is off the globe — click on the world.');
+      setHint('该点在地球之外 —— 请点在地面上。');
   };
   const onMove = (event) => {
     if (!session || session.shape === 'pin' || destroyed) return;

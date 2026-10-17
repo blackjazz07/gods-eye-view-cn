@@ -21,7 +21,7 @@ export function createIngestion({
   async function loadLivePositions(viewer) {
     if (!viewer || feed.loading) return;
     feed.loading = true;
-    feed.loadingLabel = feed.loaded ? 'refreshing...' : 'loading...';
+    feed.loadingLabel = feed.loaded ? '刷新中…' : '加载中…';
     const requestController = new AbortController();
     const requestSessionId = feed.sessionId;
     feed.abort = requestController;

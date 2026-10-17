@@ -54,7 +54,7 @@ export function createQueries({
      * `error` (established qa-failstate pattern: a dead feed must never look
      * like a healthy empty layer) with a matching human `loadingLabel`:
      * 'LIVE · updated Xm ago' fresh, 'STALE · cached Xh' when the proxy
-     * served past-TTL cache, 'KEY REQUIRED' keyless.
+     * served past-TTL cache, '需要密钥' keyless.
      */
     getStats() {
       const now = Date.now();
@@ -67,7 +67,7 @@ export function createQueries({
           ? 'refreshing...'
           : 'loading...';
       } else if (layerState._keyRequired) {
-        loadingLabel = 'KEY REQUIRED';
+        loadingLabel = '需要密钥';
       } else if (layerState._stale) {
         loadingLabel = staleText;
       } else if (layerState._error) {
@@ -87,7 +87,7 @@ export function createQueries({
         // the operator can take.
         keyRequired: layerState._keyRequired,
         error: layerState._keyRequired
-          ? 'KEY REQUIRED'
+          ? '需要密钥'
           : layerState._stale
             ? staleText
             : layerState._error,

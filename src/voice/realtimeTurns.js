@@ -289,7 +289,7 @@ export class RealtimeTurns {
           eventId: payload.event_id,
           activeResponseMessage: payload.error?.message || null,
         });
-        this.setStatus('listening', 'Ask or command');
+        this.setStatus('listening', '请提问或下指令');
         return;
       }
       // A conversation.item.delete for a stale viewport screenshot can land
@@ -706,7 +706,7 @@ export class RealtimeTurns {
         ),
       );
     }
-    this.setStatus('listening', 'Ask or command');
+    this.setStatus('listening', '请提问或下指令');
   }
 
   /**
@@ -1062,7 +1062,7 @@ export class RealtimeTurns {
         // connection is still live. Recover to listening so the user can retry
         // (mirrors the transient-blip philosophy, H8).
         if (this.dc?.readyState === 'open') {
-          this.setStatus('listening', 'Ask or command');
+          this.setStatus('listening', '请提问或下指令');
         }
       }
       if (!this.radio.pendingRadioPlaybackResult) {

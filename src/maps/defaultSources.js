@@ -59,12 +59,12 @@ export function createDefaultMapSources({
               credit: ESRI_ATTRIBUTION_HTML,
               constructionFallback: {
                 id: 'osm',
-                message: 'Esri Satellite is unavailable; using OSM',
+                message: 'Esri 卫星不可用，已改用 OSM',
               },
               tileFailureFallback: {
                 id: 'osm',
                 threshold: 2,
-                message: 'Esri Satellite tile requests failed; using OSM',
+                message: 'Esri 卫星瓦片请求失败，已改用 OSM',
               },
             }
           : {}),

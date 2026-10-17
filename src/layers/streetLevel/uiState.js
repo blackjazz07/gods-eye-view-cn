@@ -93,7 +93,7 @@ export function composeUIState({
       color: provider.color,
     }));
   if (legend.length)
-    legend.push({ key: 'selected', label: 'Selected', color: COLORS.selected });
+    legend.push({ key: 'selected', label: '已选中', color: COLORS.selected });
   return {
     enabled,
     groundClickReady: groundClickReady === true,

@@ -80,7 +80,7 @@ export function createPanel({ state: layerState, services, parts, source }) {
         if (!targetId) {
           return `<li><span class="military-awareness-target unavailable" aria-label="Unavailable">${escapeHtml(label)} <span>${formatAwarenessDistance(item.distanceM)}</span></span></li>`;
         }
-        const accessibleLabel = label === '—' ? 'Unavailable' : label;
+        const accessibleLabel = label === '—' ? '不可用' : label;
         return `<li><button type="button" class="military-awareness-target" data-awareness-layer="${escapeHtml(cohort.id)}" data-awareness-id="${escapeHtml(targetId)}" aria-label="Focus ${escapeHtml(accessibleLabel)}">${escapeHtml(label)} <span>${formatAwarenessDistance(item.distanceM)}</span></button>${namedAreasHtml(item.memberNames)}</li>`;
       })
       .join('');
@@ -103,9 +103,9 @@ export function createPanel({ state: layerState, services, parts, source }) {
   function navigationControlsHtml() {
     const canPrevious = layerState.navigationIndex > 0;
     return `<div class="military-awareness-controls" role="group" aria-label="Global Context navigation">
-    <button type="button" data-awareness-action="previous" title="Previous — prior visited contact in the 250 km window"${canPrevious ? '' : ' disabled'}>PREVIOUS</button>
+    <button type="button" data-awareness-action="previous" title="上一个 —— 250 公里范围内上一个已访问接触"${canPrevious ? '' : ' disabled'}>上一个</button>
     <button type="button" data-awareness-action="focus">FOCUS</button>
-    <button type="button" data-awareness-action="next" title="Next — nearest unvisited contact in the 250 km window"${parts.navigation.canNavigateNext() ? '' : ' disabled'}>NEXT</button>
+    <button type="button" data-awareness-action="next" title="下一个 —— 250 公里范围内最近的未访问接触"${parts.navigation.canNavigateNext() ? '' : ' disabled'}>下一个</button>
   </div>`;
   }
 

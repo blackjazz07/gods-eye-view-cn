@@ -244,7 +244,7 @@ export function createFirePerimetersLayer({
 
   const layer = {
     id: 'fire-perimeters',
-    name: 'Fire Perimeters',
+    name: '火场边界',
     icon: '🔥',
     source: 'NIFC WFIGS',
     updateInterval: 300000,
@@ -414,10 +414,10 @@ export function createFirePerimetersLayer({
 
     getRowControls() {
       const bands = [
-        { label: 'Not contained or unknown', color: containmentAccent(0) },
-        { label: 'Under 50% contained', color: containmentAccent(1) },
-        { label: '50–99% contained', color: containmentAccent(50) },
-        { label: 'Fully contained', color: containmentAccent(100) },
+        { label: '未控制或未知', color: containmentAccent(0) },
+        { label: '控制率低于 50%', color: containmentAccent(1) },
+        { label: '控制率 50–99%', color: containmentAccent(50) },
+        { label: '完全控制', color: containmentAccent(100) },
       ];
       return {
         chips: [],

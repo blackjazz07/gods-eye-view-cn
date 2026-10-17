@@ -98,7 +98,7 @@ export function createRailCardBlocks({ container, cardId, onParams }) {
             block.clear.type = 'button';
             block.clear.dataset.actionId = 'clear';
             block.clear.textContent = '×';
-            block.clear.setAttribute('aria-label', 'Clear reading');
+            block.clear.setAttribute('aria-label', '清除读数');
             block.clear.title = 'Clear reading';
             bind((event) => {
               if (event.target === block.clear) dispatch(block.props.clear);

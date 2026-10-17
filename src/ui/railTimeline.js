@@ -40,7 +40,7 @@ export function createRailTimeline({
   slider.max = '0';
   slider.step = '1';
   slider.value = '0';
-  slider.setAttribute('aria-label', 'Observed history');
+  slider.setAttribute('aria-label', '历史观测');
   row.appendChild(slider);
   const next = makeButton('›', 'Later observation', row);
   const controls = document.createElement('div');
@@ -52,7 +52,7 @@ export function createRailTimeline({
   controls.appendChild(readout);
   const label = document.createElement('div');
   label.className = 'panel-title';
-  label.textContent = 'Observed history';
+  label.textContent = '历史观测';
   const endpoints = document.createElement('div');
   endpoints.className = 'rail-timeline-endpoints';
   const oldest = document.createElement('span');

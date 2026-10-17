@@ -171,7 +171,7 @@ export function recipeToScene(recipe) {
 
   return {
     id: recipe.id || uid('scene'),
-    title: recipe.title || 'Untitled Scene',
+    title: recipe.title || '未命名场景',
     releaseLayerIds: [
       ...new Set(
         (Array.isArray(recipe.releaseLayerIds)

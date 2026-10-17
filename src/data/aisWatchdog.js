@@ -501,9 +501,9 @@ export function createAisWatchdog(options = {}) {
 }
 
 function defaultFailureMessage(kind) {
-  if (kind === 'auth') return 'AISStream rejected the API key';
-  if (kind === 'rate-limit') return 'AISStream rate-limited this key';
-  return 'AISStream websocket error';
+  if (kind === 'auth') return 'AISStream 拒绝了这个 API Key';
+  if (kind === 'rate-limit') return 'AISStream 对该密钥触发限流';
+  return 'AISStream WebSocket 错误';
 }
 
 function positiveOr(value, fallback) {

@@ -190,7 +190,7 @@ export function reduceVoiceCard(state, event) {
             : result.ok
               ? 'done'
               : 'failed',
-          detail: result.outlinePending ? 'Tracing outline' : '',
+          detail: result.outlinePending ? '正在描绘轮廓' : '',
           annotationIds: result.outlinePending ? annotationIds(result) : [],
         }),
       );
@@ -224,7 +224,7 @@ export function reduceVoiceCard(state, event) {
           ...step,
           annotationIds: remaining,
           detail: remaining.length
-            ? 'Tracing outline'
+            ? '正在描绘轮廓'
             : event.status === 'resolved'
               ? 'Outline traced'
               : 'Outline unavailable',

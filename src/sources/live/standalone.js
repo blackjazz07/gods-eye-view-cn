@@ -66,7 +66,7 @@ export function createFlightSource({
   now = () => Date.now(),
 } = {}) {
   return {
-    label: 'Flights',
+    label: '航班',
     async getSnapshot(query = {}, { signal } = {}) {
       const params = new URLSearchParams();
       if (Number.isFinite(query.latitude) && Number.isFinite(query.longitude)) {
@@ -127,7 +127,7 @@ export function createMilitarySource({
   now = () => Date.now(),
 } = {}) {
   return {
-    label: 'Military aircraft',
+    label: '军机',
     async getIdentities(_query = {}, { signal } = {}) {
       const { response, payload } = await readResponse(
         fetchImpl,
@@ -186,7 +186,7 @@ export function createVesselSource({
   origin = () => globalThis.location?.origin || 'http://localhost',
 } = {}) {
   return {
-    label: 'Vessels',
+    label: '船只',
     async getSnapshot({ maxRows = 12000, area } = {}, { signal } = {}) {
       const url = new URL(apiUrl, origin());
       url.searchParams.set('maxRows', String(maxRows));

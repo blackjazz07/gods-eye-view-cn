@@ -454,7 +454,7 @@ export function createStreetLevelLayer({
 
   const layer = {
     id: STREET_LEVEL_LAYER_ID,
-    name: 'Street Level',
+    name: '街景',
     icon: '📷',
     /** The sources usable on this map (Street View only on Google 3D). */
     get source() {
@@ -549,7 +549,7 @@ export function createStreetLevelLayer({
       let loadingLabel = '';
       const keyLabel = coverage.keyRejected ? 'KEY REJECTED' : 'KEY REQUIRED';
       if (coverage.keyRequired) loadingLabel = keyLabel;
-      else if (coverage.loading) loadingLabel = 'loading coverage...';
+      else if (coverage.loading) loadingLabel = '正在加载覆盖…';
       else if (coverage.hint && state.enabled) loadingLabel = coverage.hint;
       return {
         source: layer.source,

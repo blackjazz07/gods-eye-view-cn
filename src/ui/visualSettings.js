@@ -1653,16 +1653,16 @@ export class VisualSettings {
     );
     btn.classList.remove('active', 'god', 'panoptic');
     if (modeLabel === 'SPARSE') {
-      btn.querySelector('.pp-label').textContent = 'SPARSE';
+      btn.querySelector('.pp-label').textContent = '稀疏';
       btn.classList.add('active');
     } else if (modeLabel === 'BALANCED') {
-      btn.querySelector('.pp-label').textContent = 'BALANCED';
+      btn.querySelector('.pp-label').textContent = '均衡';
       btn.classList.add('active');
     } else if (modeLabel === 'DENSE') {
-      btn.querySelector('.pp-label').textContent = 'DENSE';
+      btn.querySelector('.pp-label').textContent = '密集';
       btn.classList.add('active', 'panoptic');
     } else {
-      btn.querySelector('.pp-label').textContent = 'DETECT';
+      btn.querySelector('.pp-label').textContent = '侦测';
     }
 
     if (this._detectionSliderRow) {

@@ -219,7 +219,7 @@ export class RealtimeConnection {
     // — this is what "applies next session" means.
     this.cost.prepareSession();
     this.syncCostUi();
-    this.setStatus('connecting', 'Requesting microphone');
+    this.setStatus('connecting', '正在请求麦克风');
     this.debugLog('session.starting', {
       epoch,
       tier: this.cost.voiceTier,

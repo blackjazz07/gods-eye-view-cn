@@ -263,7 +263,7 @@ export function createOverpassAlprSource({
     label: 'OpenStreetMap · community mapped',
     attribution: {
       name: 'OpenStreetMap',
-      description: 'OpenStreetMap contributors (ODbL 1.0; community mapped)',
+      description: 'OpenStreetMap 贡献者（ODbL 1.0；社区测绘）',
       text: '© OpenStreetMap contributors',
       href: 'https://www.openstreetmap.org/copyright',
     },

@@ -80,7 +80,7 @@ export function createSelection({
     requestWorldFocus({
       kind: 'fire',
       id: fireDetectionKey(fire),
-      label: 'FIRE',
+      label: '火点',
       position: components.model.firePosition(fire),
     });
   }

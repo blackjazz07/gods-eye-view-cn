@@ -10,7 +10,7 @@ const [datacenters, dams] = createInfrastructureLayers(localGeoJsonServices);
 // but the data is NOT bundled anymore — it needs FIRMS_MAP_KEY server-side.
 const fires = createFirmsHeatmapLayer({
   id: 'local-firms',
-  name: 'FIRMS Active Fires',
+  name: 'FIRMS 活跃火点',
   icon: '▲',
   source: 'NASA FIRMS · LIVE',
 });

@@ -60,7 +60,7 @@ const PANEL_APP_BASE_URL = 'https://app.gods-eye-view.invalid/';
 export const PANEL_REQUEST_TOOL = 'panel_request';
 
 /**
- * The panel page: its status line, the Open in God's Eye View button, and
+ * The panel page: its status line, the 在 God's Eye View 中打开 button, and
  * the panel's script, `runtime`, which loads the app through the MCP server
  * and shows each view a tool returns.
  */
@@ -99,7 +99,7 @@ function panelHtml(runtime, panelKey) {
 <div id="status">Waiting for a view…</div>
 <div id="actions">
 <button id="expand" type="button" hidden>Expand</button>
-<button id="open" type="button" hidden>Open in God's Eye View</button>
+<button id="open" type="button" hidden>在 God's Eye View 中打开</button>
 </div>
 <script>${script}</script>
 </body>

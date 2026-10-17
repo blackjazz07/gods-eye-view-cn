@@ -94,7 +94,7 @@ export function stopBriefRotation() {
 export function updateLocalPosition(info) {
   if (!this.localCoordinates) return;
   if (!Number.isFinite(info.latitude) || !Number.isFinite(info.longitude)) {
-    this.localCoordinates.textContent = 'POSITION UNAVAILABLE';
+    this.localCoordinates.textContent = '位置不可用';
     return;
   }
   const lat = `${Math.abs(info.latitude).toFixed(3)}°${info.latitude >= 0 ? 'N' : 'S'}`;
@@ -180,9 +180,9 @@ export function renderRegionalBriefStatus(status, info) {
   }
   if (status === 'unavailable') this.newsList?.replaceChildren();
   if (this.localPlace && status === 'loading')
-    this.localPlace.textContent = 'RESOLVING REGION';
+    this.localPlace.textContent = '正在解析区域';
   if (this.localPlace && status === 'unavailable')
-    this.localPlace.textContent = 'REGION UNAVAILABLE';
+    this.localPlace.textContent = '区域不可用';
   this.updateLocalPosition(info);
 }
 

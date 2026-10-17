@@ -49,7 +49,7 @@ export function normalizeLayerLoading(layer = {}) {
   const accepted = Boolean(stats.lastUpdate) || count > 0;
   return {
     id: String(layer.id || ''),
-    label: String(layer.name || layer.id || 'Layer'),
+    label: String(layer.name || layer.id || '图层'),
     loading,
     disabling,
     refresh:
@@ -244,7 +244,7 @@ export function reduceTrafficSyncFeedback(
       // Neutral default: the layer always supplies its own LIVE/SIMULATED
       // label, and a fallback string must never claim a live feed on a
       // keyless build.
-      label: label || 'syncing road network',
+      label: label || '正在同步路网',
       progressText: hasProgress ? `${progressPct}%` : '...',
     };
   }

@@ -11,7 +11,7 @@ export function normalizeVessel(row) {
   return {
     lat,
     lon,
-    name: String(row.name || row.mmsi || 'VESSEL'),
+    name: String(row.name || row.mmsi || '船只'),
     mmsi: String(row.mmsi || '').trim(),
     reference: row.reference ?? String(row.mmsi || '').trim(),
     imo: String(row.imo || ''),

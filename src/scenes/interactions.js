@@ -24,7 +24,7 @@ export function createSceneInteractions(
         card.append(text);
         if (item.action.url) {
           const link = document.createElement('a');
-          link.textContent = 'Source';
+          link.textContent = '来源';
           link.style.color = '#6eeaff';
           link.href = item.action.url;
           link.target = '_blank';
@@ -87,7 +87,7 @@ export function createSceneInteractions(
       }
       panel = document.createElement('section');
       panel.dataset.directorInteractions = '';
-      panel.setAttribute('aria-label', 'Scene actions');
+      panel.setAttribute('aria-label', '场景操作');
       Object.assign(panel.style, {
         position: 'absolute',
         left: '12px',

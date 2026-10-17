@@ -128,7 +128,7 @@ export class IntelHUD {
     this._lastSummarySignature = '';
     this._summaryRevision = 0;
     // One-shot guards so the very first summary lands immediately instead of
-    // waiting for the 15s interval tick: B) swap the "Awaiting telemetry..."
+    // waiting for the 15s interval tick: B) swap the "等待遥测…"
     // placeholder for the deterministic line as soon as metrics exist, then
     // A) kick a real AI summary once the intro fly-to settles.
     this._firstMetricsShown = false;
@@ -158,7 +158,7 @@ export class IntelHUD {
         this._setSummaryText(this._composeSummary(), false);
       }
       // First settled view: request the AI summary now rather than waiting for
-      // the periodic tick (saves up to ~15s of "Awaiting telemetry...").
+      // the periodic tick (saves up to ~15s of "等待遥测…").
       if (!this._firstSummaryKicked && this._visible && this._latestMetrics) {
         this._firstSummaryKicked = true;
         void this._updateSummary(true, true);
@@ -189,20 +189,20 @@ export class IntelHUD {
       <div class="hud-sonar" aria-hidden="true"></div>
 
       <div class="hud-top-bar">
-        <span class="hud-top-bar-left">TOP SECRET // SI-TK // NOFORN</span>
+        <span class="hud-top-bar-left">绝密 // SI-TK // 禁止外传</span>
         <span class="hud-top-bar-center">${this._missionId}</span>
-        <span class="hud-top-bar-right">PAGE 1/1</span>
+        <span class="hud-top-bar-right">第 1/1 页</span>
       </div>
 
       <div class="hud-corner hud-top-left">
         <div class="hud-bracket">┌</div>
         <div class="hud-content">
-          <div class="hud-classification">TOP SECRET // SI-TK // NOFORN</div>
+          <div class="hud-classification">绝密 // SI-TK // 禁止外传</div>
           <div class="hud-system">${this._missionId}  ${this._sensorId}</div>
-          <div class="hud-mode" id="hud-mode">NORMAL</div>
+          <div class="hud-mode" id="hud-mode">标准</div>
           <div class="hud-summary-wrap">
-            <div class="hud-summary-label">SUMMARY</div>
-            <div class="hud-summary" id="hud-summary">Awaiting telemetry...</div>
+            <div class="hud-summary-label">摘要</div>
+            <div class="hud-summary" id="hud-summary">等待遥测…</div>
           </div>
         </div>
       </div>
@@ -210,7 +210,7 @@ export class IntelHUD {
       <div class="hud-corner hud-top-right">
         <div class="hud-content" style="text-align:right">
           <div class="hud-rec"><span id="hud-rec-dot">●</span> REC  <span id="hud-timestamp">2026-01-01 00:00:00Z</span></div>
-          <div class="hud-orbital">ORB: ${this._orbitNum}  PASS: DESC-${this._passNum}</div>
+          <div class="hud-orbital">轨道: ${this._orbitNum}  过境: DESC-${this._passNum}</div>
         </div>
         <div class="hud-bracket">┐</div>
       </div>
@@ -226,21 +226,21 @@ export class IntelHUD {
       <div class="hud-corner hud-bottom-right">
         <div class="hud-content" style="text-align:right">
           <div id="hud-gsd">GSD: --m  NIIRS: --</div>
-          <div id="hud-alt">ALT: --m   SUN: --° EL</div>
+          <div id="hud-alt">高度: --m   太阳角: --° EL</div>
           <div id="hud-ais-vessel" class="hud-ais-vessel">AIS: --</div>
         </div>
         <div class="hud-bracket">┘</div>
       </div>
 
       <div class="hud-edge hud-left-edge">
-        <div id="hud-coll">COLL: --:--:--Z</div>
-        <div id="hud-ona">ONA: --°</div>
+        <div id="hud-coll">采集: --:--:--Z</div>
+        <div id="hud-ona">侧摆角: --°</div>
       </div>
 
       <div class="hud-edge hud-right-edge">
-        <div>BAND: PAN</div>
-        <div>BITS: 11</div>
-        <div>LVL: 1A</div>
+        <div>波段: PAN</div>
+        <div>位深: 11</div>
+        <div>级别: 1A</div>
       </div>
 
       <div class="hud-bottom-bar">
@@ -381,7 +381,7 @@ export class IntelHUD {
     );
     const gsdEl = document.getElementById('hud-gsd');
     if (gsdEl)
-      gsdEl.textContent = `GSD: ${gsd.toFixed(2)}m  NIIRS: ${niirs.toFixed(1)}`;
+      gsdEl.textContent = `GSD: ${gsd.toFixed(2)}m   NIIRS: ${niirs.toFixed(1)}`;
 
     // Altitude — reported as height above MEAN SEA LEVEL. `altM` is the raw
     // ellipsoidal camera height, which reads far below zero wherever the geoid
@@ -393,7 +393,7 @@ export class IntelHUD {
     const altMslM = ellipsoidalToMslDisplayM(altM, geoidN);
     const sunEl = this._estimateSunElevation(latDeg, lonDeg);
     if (altEl)
-      altEl.textContent = `ALT: ${Math.round(altMslM)}m   SUN: ${sunEl.toFixed(1)}° EL`;
+      altEl.textContent = `高度: ${Math.round(altMslM)}m   太阳角: ${sunEl.toFixed(1)}° EL`;
 
     // Collection timestamp
     const collEl = document.getElementById('hud-coll');
@@ -402,7 +402,7 @@ export class IntelHUD {
       const h = String(now.getUTCHours()).padStart(2, '0');
       const m = String(now.getUTCMinutes()).padStart(2, '0');
       const s = String(now.getUTCSeconds()).padStart(2, '0');
-      collEl.textContent = `COLL: ${h}:${m}:${s}Z`;
+      collEl.textContent = `采集: ${h}:${m}:${s}Z`;
     }
 
     // Off-nadir angle (ONA): camera pitch of -90 deg is nadir (straight down),
@@ -410,7 +410,7 @@ export class IntelHUD {
     const pitchDeg = Cesium.Math.toDegrees(camera.pitch);
     const ona = Math.max(0, 90 + pitchDeg);
     const onaEl = document.getElementById('hud-ona');
-    if (onaEl) onaEl.textContent = `ONA: ${ona.toFixed(1)}°`;
+    if (onaEl) onaEl.textContent = `侧摆角: ${ona.toFixed(1)}°`;
 
     // `altM` stays the raw ellipsoidal camera height the sensor model reads
     // (GSD/NIIRS, view band). `altMslM` is the ADDITIVE display datum — the
@@ -424,7 +424,7 @@ export class IntelHUD {
       ona,
     };
 
-    // First time we have real telemetry: replace the "Awaiting telemetry..."
+    // First time we have real telemetry: replace the "等待遥测…"
     // placeholder with the deterministic summary line instantly (no network),
     // so there's always meaningful context on screen. The AI summary upgrades
     // this within a second via the moveEnd kick / periodic refresh.
@@ -634,10 +634,10 @@ export class IntelHUD {
    */
   _composeSummary() {
     const m = this._latestMetrics;
-    if (!m) return 'Awaiting telemetry...';
+    if (!m) return '等待遥测…';
 
     const modeEl = document.getElementById('hud-mode');
-    const modeLabel = modeEl?.textContent || 'NORMAL';
+    const modeLabel = modeEl?.textContent || '标准';
     const region = this._regionLabel(m.latDeg, m.lonDeg);
     const nearest = this._nearestKnownPoint(m.latDeg, m.lonDeg);
     const band = this._viewBand(m.altM);

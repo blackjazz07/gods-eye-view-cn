@@ -63,7 +63,7 @@ export function createWeatherPanel({
   const root = document.createElement('section');
   root.className = 'weather-readout';
   root.hidden = true;
-  root.setAttribute('aria-label', 'Active weather');
+  root.setAttribute('aria-label', '当前天气');
   const timelineHost = document.createElement('div');
   timelineHost.className = 'weather-timeline-block';
   timelineHost.hidden = true;
@@ -71,10 +71,10 @@ export function createWeatherPanel({
   cardsHost.className = 'weather-cards';
   const observedGroup = document.createElement('section');
   observedGroup.className = 'weather-observed-group';
-  observedGroup.setAttribute('aria-label', 'Observed history');
+  observedGroup.setAttribute('aria-label', '历史观测');
   const heading = document.createElement('h3');
   heading.className = 'panel-title';
-  heading.textContent = 'Observed history';
+  heading.textContent = '历史观测';
   const scope = document.createElement('div');
   scope.className = 'weather-observed-scope';
   const observedCardsHost = document.createElement('div');

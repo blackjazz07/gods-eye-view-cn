@@ -9,7 +9,7 @@ export const MAP_STACKS = [
   },
   {
     id: 'bing-aerial',
-    label: 'Bing Aerial',
+    label: 'Bing 航拍',
     shortLabel: 'Aerial',
     kind: 'ion',
     style: Cesium.IonWorldImageryStyle.AERIAL,
@@ -17,7 +17,7 @@ export const MAP_STACKS = [
   },
   {
     id: 'bing-labels',
-    label: 'Bing Labels',
+    label: 'Bing 标注',
     shortLabel: 'Labels',
     kind: 'ion',
     style: Cesium.IonWorldImageryStyle.AERIAL_WITH_LABELS,
@@ -25,7 +25,7 @@ export const MAP_STACKS = [
   },
   {
     id: 'esri-imagery',
-    label: 'Esri Satellite',
+    label: 'Esri 卫星',
     shortLabel: 'SAT',
     kind: 'esri-imagery',
     requiresIon: false,
